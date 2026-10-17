@@ -13,20 +13,35 @@ import java.util.function.Predicate;
 public interface Regla<T> {
 
     boolean evaluar(T t);
-
+    /**
+     * Comprobamos que otra no sea nula con el método requireNotNull de Object
+     * retornamos el resultado de la lambda solicitada (T O F)
+     * */
     default Regla<T> y(Regla<? super T> otra) {
         // TODO E11: Devolver la lambda t -> evaluar(t) && otra.evaluar(t) (validar otra no nula).
-        throw new UnsupportedOperationException("TODO E11");
-    }
+        Objects.requireNonNull(otra);
 
+        return t -> evaluar(t) && otra.evaluar(t);
+    }
+    /**
+     * Comprobamos que otra no sea nula con el método requireNotNull de Object
+     * retornamos el resultado de la lambda solicitada (T O F)
+     * */
     default Regla<T> o(Regla<? super T> otra) {
         // TODO E11: Devolver la lambda t -> evaluar(t) || otra.evaluar(t).
-        throw new UnsupportedOperationException("TODO E11");
+        Objects.requireNonNull(otra);
+
+        return t->evaluar(t) || otra.evaluar(t);
     }
+
+    /**
+     * Comprobamos que otra no sea nula con el método requireNotNull de Object
+     * retornamos el resultado de la lambda solicitada. Negación de T O F
+     * */
 
     default Regla<T> negar() {
         // TODO E11: Devolver la lambda t -> !evaluar(t).
-        throw new UnsupportedOperationException("TODO E11");
+        return t -> !evaluar(t);
     }
 
     /** Adaptador hacia {@link Predicate} mediante referencia a método de instancia particular. */

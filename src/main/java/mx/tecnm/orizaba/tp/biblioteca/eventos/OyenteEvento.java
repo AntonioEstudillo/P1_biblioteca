@@ -12,9 +12,15 @@ public interface OyenteEvento {
 
     void notificar(Evento evento);
 
+    /**
+     * Se crea la lambda que primero atiende la notificscion de this (El oyente actual) y posteriormente del parametro siguiente
+     *
+     * */
+
     /** Composición secuencial de oyentes (función de orden superior). */
     default OyenteEvento luego(OyenteEvento siguiente) {
         // TODO E11: Devolver una lambda que notifique primero a this y después a siguiente.
-        throw new UnsupportedOperationException("TODO E11");
+        return evento ->{ this.notificar(evento);
+        siguiente.notificar(evento);};
     }
 }

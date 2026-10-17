@@ -76,29 +76,91 @@ public class Acervo implements Iterable<Material>, Serializable {
         return elementos.values().stream().filter(regla::evaluar).toList();
     }
 
+    /**
+     *<E extends Material> = Limete inferior
+     * Recupera el valor de los elementos
+     * filtra si es la instancia que se espera
+     * Map::cast se asegura de que el tipo sea del tipo esperado
+     * se retorna en fornato de lista
+     * */
     /** Filtrado por subtipo con genéricos acotados: {@code deTipo(Material.Libro.class)}. */
     public <E extends Material> List<E> deTipo(Class<E> tipo) {
         // TODO E09: Usar filter(tipo::isInstance) y map(tipo::cast).
-        throw new UnsupportedOperationException("TODO E09");
+        return elementos.values().stream().filter(tipo::isInstance).map(tipo::cast).toList();
     }
 
     public List<Material> ordenados(Comparator<? super Material> criterio) {
         return elementos.values().stream().sorted(criterio).toList();
     }
 
+
+    /**
+     * Utilizamos una clase anonima para implementar Comparator
+     * compara 2 tipos de materiales (libro, tesis, o revista)
+     * Devuelve el resultado entre la comparación de la taria, dependiendo de las unidades capturadas por el método
+     * */
     /**
      * Comparador implementado con una <strong>clase anónima</strong> que captura la variable
      * {@code unidades} (efectivamente final; véase {@code Parcel09}).
      */
     public static Comparator<Material> porTarifa(final int unidades) {
         // TODO E10: Devolver new Comparator<>() { compare(a, b) → Double.compare(a.tarifa(unidades), b.tarifa(unidades)) }.
-        throw new UnsupportedOperationException("TODO E10");
+        return new Comparator<Material>() {
+            @Override
+            public int compare(Material o1, Material o2) {
+                return Double.compare(o1.tarifa(unidades), o2.tarifa(unidades));
+            }
+        };
     }
+
+    /**
+     * Se declara la clase local Acumulador con las variables solicitadas
+     * Se agrega el método vacio agregae, donde se reraliza la operaciones de acumulación y se declaran el minimo y el maximo
+     * Se crea un objeto de la clase interna y se recorre el catalogo con un ciclo for
+     *Se da formato a la salida
+     * */
+
 
     /** Resumen calculado con una <strong>clase local</strong> (véase {@code Parcel05}). */
     public String resumen() {
         // TODO E10: Declarar dentro del método la clase local Acumulador (cuenta, suma, mínimo, máximo) y recorrer el catálogo.
-        throw new UnsupportedOperationException("TODO E10");
+       class Acumulador {
+           int cuenta;
+           double suma;
+           double minimo = Double.POSITIVE_INFINITY;
+           double maximo = Double.NEGATIVE_INFINITY;
+
+        void agregar (Material material){
+            double precio = material.precioBase();
+            cuenta++;
+            suma =+ precio;
+            minimo = Math.min(minimo, precio);
+            maximo = Math.max(maximo, precio);
+        }
+
+       }
+
+        Acumulador acumulador = new Acumulador();
+
+        for (Material material : elementos.values()) {
+            acumulador.agregar(material);
+        }
+
+        double minimo = acumulador.cuenta == 0
+                ? 0.0
+                : acumulador.minimo;
+
+        double maximo = acumulador.cuenta == 0
+                ? 0.0
+                : acumulador.maximo;
+
+        return "%d elementos, suma=%.2f, mínimo=%.2f, máximo=%.2f"
+                .formatted(
+                        acumulador.cuenta,
+                        acumulador.suma,
+                        minimo,
+                        maximo
+                );
     }
 
     @Override
@@ -120,10 +182,20 @@ public class Acervo implements Iterable<Material>, Serializable {
             return cursor < instantanea.size();
         }
 
+
+        /**
+         * Compara siexiste el siguiente con el método hasNext()
+         *
+         * Retorna el cursor aumentando en 1
+         * */
         @Override
         public Material next() {
             // TODO E10: Lanzar NoSuchElementException si no hay siguiente; devolver el elemento y avanzar el cursor.
-            throw new UnsupportedOperationException("TODO E10");
+           if(!hasNext()){
+               throw new NoSuchElementException();
+           }
+
+           return instantanea.get(cursor++);
         }
     }
 }

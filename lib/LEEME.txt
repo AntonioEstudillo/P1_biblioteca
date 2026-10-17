@@ -1,0 +1,1 @@
+Coloca aquí sqlite-jdbc-3.46.1.3.jar (Maven Central: org.xerial:sqlite-jdbc) si no usas Maven.

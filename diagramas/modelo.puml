@@ -1,0 +1,174 @@
+@startuml
+title P1 – Sistema de Préstamos de una Biblioteca Universitaria
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package modelo {
+  interface Prestable {
+    {static} +TASA_IMPUESTO : double
+    +clave() : Signatura
+    +nombre() : String
+    +precioBase() : double
+    +tarifa(u : int) : double
+    +tarifaConImpuesto(u : int) : double
+    {static} +porNombre() : Comparator
+  }
+  interface Digitalizable {
+    +urlRepositorio() : String
+    +descripcionCorta() : String
+  }
+  interface Restringido {
+    +nivelAcceso() : int
+    +descripcionCorta() : String
+  }
+  abstract class Material <<sealed>> {
+    -clave : Signatura
+    -nombre : String
+    -precioBase : double
+    -creadoEn : LocalDateTime
+    -cotizaciones : int <<transient>>
+    +tarifa(u : int) : double <<final>>
+    {abstract} #calcularTarifa(u : int) : double
+    {abstract} +copiar() : Material
+  }
+  class "Material.Libro" as Libro <<static final>> {
+    {static} +PREFIJO : String = "LIB"
+    -paginas : int
+    #calcularTarifa(u : int) : double
+    +copiar() : Libro
+  }
+  class "Material.Revista" as Revista <<static final>> {
+    {static} +PREFIJO : String = "REV"
+    -antiguedadAnios : int
+    #calcularTarifa(u : int) : double
+    +copiar() : Revista
+  }
+  class "Material.Tesis" as Tesis <<static final>> {
+    {static} +PREFIJO : String = "TES"
+    -grado : String
+    #calcularTarifa(u : int) : double
+    +copiar() : Tesis
+  }
+  class Signatura <<record>> {
+    prefijo : String
+    numero : int
+    {static} +siguiente(prefijo : String) : Signatura
+    {static} +parse(texto : String) : Signatura
+  }
+  enum Nivel {
+    EXTERNO
+    ESTUDIANTE
+    DOCENTE
+    +aplicar(monto : double) : double
+  }
+  enum Estado {
+    ABIERTA
+    EN_CURSO
+    CERRADA
+    CANCELADA
+    +permiteTransicionA(d : Estado) : boolean
+  }
+  class Socio <<Externalizable>> {
+    -id : int
+    -nombre : String
+    -correo : String
+    -nivel : Nivel
+  }
+  class Prestamo {
+    -id : int
+    -fecha : LocalDate
+    -estado : Estado
+    +agregar(e : Material, u : int) : Linea
+    +cambiarEstado(d : Estado)
+    +total() : double
+  }
+  class "Prestamo.Linea" as Linea <<inner>> {
+    -unidades : int
+    +importe() : double
+  }
+  class Acervo {
+    +agregar(e : Material...)
+    +filtrar(r : Regla) : List
+    {static} +porTarifa(u : int) : Comparator
+    +resumen() : String
+  }
+  class "Acervo.Iterador" as Iterador <<private inner>>
+}
+
+package funcional {
+  interface "Regla<T>" as Regla <<functional>> {
+    +evaluar(t : T) : boolean
+    +y(o) : Regla
+    +o(o) : Regla
+    +negar() : Regla
+  }
+  interface "FabricaElemento<E extends Material, A>" as Fabrica <<functional>> {
+    +crear(nombre, precio, atributo : A) : E
+  }
+}
+
+package concurrencia {
+  abstract class TareaPeriodica implements Runnable {
+    -activa : boolean <<volatile>>
+    +iniciar(nombre : String)
+    +detener()
+    {abstract} #ejecutarCiclo()
+  }
+}
+
+package eventos {
+  interface OyenteEvento <<functional>>
+  class Evento <<record>>
+}
+
+package persistencia {
+  interface "Repositorio<T,K>" as Repositorio
+  class RepositorioMaterialSQLite
+  class RepositorioSocioSQLite
+  class RepositorioPrestamoSQLite
+  class ConexionSQLite
+  class Respaldo
+}
+
+package servicio {
+  class Biblioteca {
+    +registrar(f : FabricaElemento, ...) : E
+    +abrir(id : int) : Prestamo
+    +revisar() : int
+    +iniciarMonitor(ms : long)
+  }
+  class "Biblioteca.MonitorVencimientos" as Monitor <<inner>>
+}
+
+Material ..|> Prestable
+Libro --|> Material
+Material +-- Libro
+Libro ..|> Digitalizable
+Revista --|> Material
+Material +-- Revista
+Revista ..|> Restringido
+Tesis --|> Material
+Material +-- Tesis
+Tesis ..|> Digitalizable
+Tesis ..|> Restringido
+Prestamo *-- "1..*" Linea
+Prestamo +-- Linea
+Linea --> "1" Material
+Prestamo --> "1" Socio
+Prestamo --> Estado
+Socio --> Nivel
+Acervo o-- "0..*" Material
+Acervo +-- Iterador
+Acervo ..> Regla
+Fabrica ..> Material
+Biblioteca +-- Monitor
+Monitor --|> TareaPeriodica
+Biblioteca o-- "0..*" OyenteEvento
+Biblioteca --> Acervo
+Biblioteca --> Repositorio
+RepositorioMaterialSQLite ..|> Repositorio
+RepositorioSocioSQLite ..|> Repositorio
+RepositorioPrestamoSQLite ..|> Repositorio
+RepositorioPrestamoSQLite --> ConexionSQLite
+OyenteEvento ..> Evento
+@enduml

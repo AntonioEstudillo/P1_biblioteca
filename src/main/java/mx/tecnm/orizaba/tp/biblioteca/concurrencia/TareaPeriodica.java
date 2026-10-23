@@ -41,6 +41,7 @@ public abstract class TareaPeriodica implements Runnable {
 
         hilo.setDaemon(true);
 
+        activa = true;
         hilo.start();
 
 

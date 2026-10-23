@@ -18,7 +18,8 @@ import java.util.Optional;
  *   <li>Lectura: mapa de reconstructores (lambdas) indexado por el nombre del subtipo.</li>
  * </ul>
  */
-public class RepositorioMaterialSQLite implements Repositorio<Material, Signatura> {
+public class
+RepositorioMaterialSQLite implements Repositorio<Material, Signatura> {
 
     /** Interfaz funcional privada anidada. */
     @FunctionalInterface
@@ -49,30 +50,108 @@ public class RepositorioMaterialSQLite implements Repositorio<Material, Signatur
     /** Atributo específico del subtipo, obtenido con pattern matching. */
     static String atributoDe(Material e) {
         // TODO E13: switch (e) { case Material.Libro x -> ...; ... } sin default (la jerarquía es sellada).
-        throw new UnsupportedOperationException("TODO E13");
+        return switch (e){
+            case Material.Libro x ->
+                Integer.toString(x.paginas());
+            case Material.Revista x->
+                Integer.toString(x.antiguedadAnios());
+            case Material.Tesis x->
+                x.grado();
+        };
     }
 
     @Override
     public void guardar(Material e) {
         // TODO E13: INSERT ... ON CONFLICT(clave) DO UPDATE ... con PreparedStatement.
-        throw new UnsupportedOperationException("TODO E13");
+        String sql = """
+                    INSERT INTO material (clave, tipo, nombre, precio_base, atributo)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT(clave) DO UPDATE SET
+                        tipo = excluded.tipo,
+                        nombre = excluded.nombre,
+                        precio_base = excluded.precio_base,
+                        atributo = excluded.atributo
+                    """;
+
+        try (PreparedStatement ps = bd.conexion().prepareStatement(sql)){
+            ps.setString(1, e.clave().toString());
+            ps.setString(2, e.tipo());
+            ps.setString(3, e.nombre());
+            ps.setDouble(4, e.precioBase());
+            ps.setString(5, atributoDe(e));
+
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            throw new PersistenciaException("Error al guardar", ex);
+        }
     }
 
     @Override
     public Optional<Material> buscar(Signatura clave) {
         // TODO E13: SELECT por clave; mapear con mapeador si hay fila.
-        throw new UnsupportedOperationException("TODO E13");
+        String sql = """
+                SELECT clave, tipo, nombre, precio_base, atributo
+                FROM material
+                WHERE clave = ?
+                """;
+
+        try (PreparedStatement ps = bd.conexion().prepareStatement(sql)){
+            ps.setString(1, clave.toString());
+
+            try (ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    return Optional.of(
+                            mapeador.mapear(rs)
+                    );
+                }
+
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al buscar",e);
+        }
+
     }
 
     @Override
     public List<Material> todos() {
         // TODO E13: SELECT ordenado por clave; mapear cada fila.
-        throw new UnsupportedOperationException("TODO E13");
+       String sql = """
+               SELECT clave, tipo, nombre, precio_base, atributo
+               FROM material 
+               ORDER BY clave = ? 
+       
+               """;
+
+       List<Material> materiales = new ArrayList<>();
+
+       try (PreparedStatement ps = bd.conexion().prepareStatement(sql); ResultSet rs = ps.executeQuery()){
+            while (rs.next()){
+                materiales.add(mapeador.mapear(rs));
+            }
+            return materiales;
+       } catch (SQLException e) {
+           throw new PersistenciaException("Error al consultar",e);
+       }
     }
 
     @Override
     public boolean eliminar(Signatura clave) {
         // TODO E13: DELETE por clave; devolver si se afectó alguna fila.
-        throw new UnsupportedOperationException("TODO E13");
+        String sql = """
+                DELETE FROM material
+                WHERE clave = ?
+                """;
+
+        try(PreparedStatement ps = bd.conexion().prepareStatement(sql)){
+
+            ps.setString(1, clave.toString());
+            int filas = ps.executeUpdate();
+
+            return filas>0;
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al buscar", e);
+        }
     }
 }

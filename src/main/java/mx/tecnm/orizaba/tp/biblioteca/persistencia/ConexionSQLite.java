@@ -57,7 +57,22 @@ public final class ConexionSQLite implements AutoCloseable {
     /** @param rutaArchivo archivo .db (se crea si no existe) */
     public ConexionSQLite(String rutaArchivo) {
         // TODO E13: Abrir jdbc:sqlite:<ruta>, activar PRAGMA foreign_keys = ON y crear el esquema.
-        throw new UnsupportedOperationException("TODO E13");
+        try {
+            conexion = DriverManager.getConnection( "jdbc:sqlite:" + rutaArchivo);
+
+        try (Statement st = conexion.createStatement()){
+            st.execute("PRAGMA foreign_keys = ON");
+
+            for(String sql : ESQUEMA){
+                st.execute(sql);
+            }
+        }
+        }catch (SQLException e) {
+            throw new PersistenciaException(
+                    "Error al iniciar la BD"+ e.getMessage(),
+                    e
+            );
+        }
     }
 
     public Connection conexion() {
@@ -69,7 +84,28 @@ public final class ConexionSQLite implements AutoCloseable {
      */
     public <R> R enTransaccion(TrabajoSQL<R> trabajo) {
         // TODO E13: setAutoCommit(false); ejecutar; commit; ante SQLException rollback y PersistenciaException; finalmente setAutoCommit(true).
-        throw new UnsupportedOperationException("TODO E13");
+        try {
+            conexion.setAutoCommit(false);
+
+            R resultado = trabajo.ejecutar(conexion);
+
+            conexion.commit();
+            return resultado;
+        } catch (SQLException e) {
+            try {
+                conexion.rollback();
+            } catch (SQLException rollbackError) {
+                e.addSuppressed(rollbackError);
+            }
+
+            throw new PersistenciaException("Error durante la transaccion" +e.getMessage(), e);
+        } finally {
+            try {
+                conexion.setAutoCommit(true);
+            } catch (SQLException e) {
+                throw new PersistenciaException("Error al restaurar autocommit", e);
+            }
+        }
     }
 
     /** Interfaz funcional miembro: trabajo que puede lanzar {@link SQLException}. */

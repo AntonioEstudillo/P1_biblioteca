@@ -114,7 +114,7 @@ public abstract sealed class Material implements Prestable, Serializable
      * asigna el precio base*/
     public final void setPrecioBase(double precioBase) {
         // TODO E04: Rechazar precios negativos, NaN o infinitos (ReglaNegocioException).
-        if(precioBase < 0 || Double.isNaN(precioBase) || Double.isFinite(precioBase)){
+        if(precioBase < 0 || Double.isNaN(precioBase) || Double.isInfinite(precioBase)){
             throw new ReglaNegocioException("Precio base no valido");
         }
 

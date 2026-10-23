@@ -29,9 +29,10 @@ public interface Prestable {
     /** Método por defecto (extensión de la interfaz sin romper implementaciones). */
     default double tarifaConImpuesto(int unidades) {
         // TODO E02: Aplicar TASA_IMPUESTO a tarifa(unidades) y redondear a 2 decimales.
-        double tarifaImpuesto = Math.round(tarifa(unidades) * (1 + TASA_IMPUESTO));
+        double total =
+                tarifa(unidades) * (1 + TASA_IMPUESTO);
 
-        return tarifaImpuesto;
+        return Math.round(total * 100.0) / 100.0;
     }
     /**
      * Utiliza el método estático de comparing de la clase comparator y accede al nombre con la referencia de método

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="mx.tecnm.orizaba.tp.biblioteca.ui.MaterialFormController"
+      spacing="12"
+      prefWidth="400">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Nuevo material"
+           style="-fx-font-size: 22px;
+                  -fx-font-weight: bold;"/>
+
+    <Label text="Tipo"/>
+    <ComboBox fx:id="tipoCombo"
+              maxWidth="Infinity"/>
+
+    <Label text="Nombre"/>
+    <TextField fx:id="nombreField"
+               promptText="Nombre del material"/>
+
+    <Label text="Precio base"/>
+    <TextField fx:id="precioField"
+               promptText="Ej. 15.50"/>
+
+    <Label fx:id="atributoLabel"
+           text="Atributo"/>
+
+    <TextField fx:id="atributoField"/>
+
+    <HBox spacing="10">
+        <Button text="Guardar"
+                onAction="#guardar"/>
+
+        <Button text="Cancelar"
+                onAction="#cancelar"/>
+    </HBox>
+
+</VBox>

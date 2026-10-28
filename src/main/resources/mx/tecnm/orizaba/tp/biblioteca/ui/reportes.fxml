@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="mx.tecnm.orizaba.tp.biblioteca.ui.ReportesController"
+            fitToWidth="true">
+
+    <content>
+
+        <VBox spacing="18">
+
+            <padding>
+                <Insets top="20"
+                        right="20"
+                        bottom="20"
+                        left="20"/>
+            </padding>
+
+            <HBox spacing="15">
+                <Label text="Reportes"
+                       styleClass="page-title"/>
+
+                <Button text="Actualizar"
+                        onAction="#actualizarReportes"/>
+            </HBox>
+
+            <Separator/>
+
+            <!-- INGRESOS -->
+
+            <Label text="Ingresos por tipo de material"
+                   styleClass="section-title"/>
+
+            <ListView fx:id="ingresosList"
+                      prefHeight="130"/>
+
+            <!-- ESTADÍSTICAS -->
+
+            <Label text="Estadísticas de préstamos cerrados"
+                   styleClass="section-title"/>
+
+            <GridPane hgap="20"
+                      vgap="10">
+
+                <Label text="Cantidad:"
+                       GridPane.columnIndex="0"
+                       GridPane.rowIndex="0"/>
+
+                <Label fx:id="lblCantidad"
+                       text="0"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="0"/>
+
+                <Label text="Ingresos totales:"
+                       GridPane.columnIndex="0"
+                       GridPane.rowIndex="1"/>
+
+                <Label fx:id="lblSuma"
+                       text="0.00"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="1"/>
+
+                <Label text="Promedio:"
+                       GridPane.columnIndex="0"
+                       GridPane.rowIndex="2"/>
+
+                <Label fx:id="lblPromedio"
+                       text="0.00"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="2"/>
+
+                <Label text="Mínimo:"
+                       GridPane.columnIndex="2"
+                       GridPane.rowIndex="0"/>
+
+                <Label fx:id="lblMinimo"
+                       text="-"
+                       GridPane.columnIndex="3"
+                       GridPane.rowIndex="0"/>
+
+                <Label text="Máximo:"
+                       GridPane.columnIndex="2"
+                       GridPane.rowIndex="1"/>
+
+                <Label fx:id="lblMaximo"
+                       text="-"
+                       GridPane.columnIndex="3"
+                       GridPane.rowIndex="1"/>
+
+            </GridPane>
+
+            <Separator/>
+
+            <!-- MÁS DEMANDADO -->
+
+            <Label text="Material más demandado"
+                   styleClass="section-title"/>
+
+            <Label fx:id="lblMasDemandado"
+                   text="Sin datos"/>
+
+            <!-- MEJORES SOCIOS -->
+
+            <HBox spacing="10">
+                <Label text="Socios con mayor importe acumulado"
+                       styleClass="section-title"/>
+
+                <Label text="Mostrar:"/>
+
+                <Spinner fx:id="topSpinner"
+                         prefWidth="80"/>
+
+                <Button text="Aplicar"
+                        onAction="#actualizarMejores"/>
+            </HBox>
+
+            <ListView fx:id="mejoresList"
+                      prefHeight="140"/>
+
+            <Separator/>
+
+            <!-- ESTADOS -->
+
+            <Label text="Préstamos por estado"
+                   styleClass="section-title"/>
+
+            <ListView fx:id="estadosList"
+                      prefHeight="130"/>
+
+            <!-- PARTICIÓN -->
+
+            <HBox spacing="10">
+
+                <Label text="Partición de materiales por precio"
+                       styleClass="section-title"/>
+
+                <Label text="Umbral:"/>
+
+                <TextField fx:id="umbralField"
+                           text="500"
+                           prefWidth="100"/>
+
+                <Button text="Aplicar"
+                        onAction="#actualizarParticion"/>
+
+            </HBox>
+
+            <HBox spacing="20">
+
+                <VBox spacing="5"
+                      HBox.hgrow="ALWAYS">
+
+                    <Label fx:id="lblMenoresTitulo"
+                           text="Menores al umbral"/>
+
+                    <ListView fx:id="menoresList"
+                              prefHeight="150"
+                              prefWidth="350"/>
+
+                </VBox>
+
+                <VBox spacing="5"
+                      HBox.hgrow="ALWAYS">
+
+                    <Label fx:id="lblMayoresTitulo"
+                           text="Iguales o mayores al umbral"/>
+
+                    <ListView fx:id="mayoresList"
+                              prefHeight="150"
+                              prefWidth="350"/>
+
+                </VBox>
+
+            </HBox>
+
+        </VBox>
+
+    </content>
+
+</ScrollPane>

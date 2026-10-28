@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="mx.tecnm.orizaba.tp.biblioteca.ui.PrestamosController"
+      spacing="15">
+
+    <padding>
+        <Insets top="20"
+                right="20"
+                bottom="20"
+                left="20"/>
+    </padding>
+
+    <!-- ==================== ENCABEZADO ==================== -->
+
+    <HBox spacing="10">
+
+        <Label text="Préstamos"
+               styleClass="page-title"/>
+
+        <Button text="Nuevo préstamo"
+                styleClass="primary-button"
+                onAction="#nuevoPrestamo"/>
+
+        <Button fx:id="btnIniciar"
+                text="Iniciar"
+                styleClass="success-button"
+                onAction="#iniciarPrestamo"/>
+
+        <Button fx:id="btnCerrar"
+                text="Cerrar"
+                styleClass="primary-button"
+                onAction="#cerrarPrestamo"/>
+
+        <Button fx:id="btnCancelar"
+                text="Cancelar"
+                styleClass="danger-button"
+                onAction="#cancelarPrestamo"/>
+
+        <Button text="Actualizar"
+                onAction="#actualizarPrestamos"/>
+
+    </HBox>
+
+    <!-- ==================== TABLA DE PRÉSTAMOS ==================== -->
+
+    <TableView fx:id="tablaPrestamos"
+               prefHeight="260">
+
+        <columns>
+
+            <TableColumn fx:id="colId"
+                         text="ID"
+                         prefWidth="60"/>
+
+            <TableColumn fx:id="colSocio"
+                         text="Socio"
+                         prefWidth="220"/>
+
+            <TableColumn fx:id="colFecha"
+                         text="Fecha"
+                         prefWidth="120"/>
+
+            <TableColumn fx:id="colEstado"
+                         text="Estado"
+                         prefWidth="130"/>
+
+            <TableColumn fx:id="colLineas"
+                         text="Líneas"
+                         prefWidth="80"/>
+
+            <TableColumn fx:id="colTotal"
+                         text="Total"
+                         prefWidth="120"/>
+
+        </columns>
+
+    </TableView>
+
+    <Separator/>
+
+    <!-- ==================== DETALLE ==================== -->
+
+    <Label text="Detalle del préstamo"
+           style="-fx-font-size: 20px;
+                  -fx-font-weight: bold;"/>
+
+    <HBox spacing="30">
+
+        <Label text="Socio:"/>
+
+        <Label fx:id="lblSocio"
+               text="-"
+               style="-fx-font-weight: bold;"/>
+
+        <Label text="Estado:"/>
+
+        <Label fx:id="lblEstado"
+               text="-"
+               styleClass="status-label"/>
+
+    </HBox>
+
+    <!-- ==================== AGREGAR MATERIAL ==================== -->
+
+    <HBox spacing="10">
+
+        <Label text="Material:"/>
+
+        <ComboBox fx:id="materialCombo"
+                  prefWidth="300"/>
+
+        <Label text="Días:"/>
+
+        <Spinner fx:id="diasSpinner"
+                 prefWidth="90"/>
+
+        <Button fx:id="btnAgregarLinea"
+                text="Agregar línea"
+                onAction="#agregarLinea"/>
+
+        <Button fx:id="btnQuitarLinea"
+                text="Quitar línea"
+                onAction="#quitarLinea"/>
+
+    </HBox>
+
+    <!-- ==================== LÍNEAS ==================== -->
+
+    <TableView fx:id="tablaLineas"
+               VBox.vgrow="ALWAYS">
+
+        <columns>
+
+            <TableColumn fx:id="colLineaClave"
+                         text="Clave"
+                         prefWidth="110"/>
+
+            <TableColumn fx:id="colLineaMaterial"
+                         text="Material"
+                         prefWidth="240"/>
+
+            <TableColumn fx:id="colLineaDias"
+                         text="Días"
+                         prefWidth="80"/>
+
+            <TableColumn fx:id="colLineaSubtotal"
+                         text="Subtotal"
+                         prefWidth="120"/>
+
+            <TableColumn fx:id="colLineaImporte"
+                         text="Importe"
+                         prefWidth="120"/>
+
+        </columns>
+
+    </TableView>
+
+    <!-- ==================== TOTALES ==================== -->
+
+    <HBox spacing="15"
+          alignment="CENTER_RIGHT">
+
+        <Label text="Subtotal:"/>
+
+        <Label fx:id="lblSubtotal"
+               text="0.00"
+               style="-fx-font-weight: bold;"/>
+
+        <Label text="Total:"/>
+
+        <Label fx:id="lblTotal"
+               text="0.00"
+               styleClass="total-label"/>
+
+    </HBox>
+
+</VBox>

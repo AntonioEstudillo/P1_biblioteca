@@ -206,6 +206,64 @@ public class Biblioteca implements AutoCloseable {
         return socio;
     }
 
+    public void actualizarSocio(
+            int id,
+            String nombre,
+            String correo,
+            Nivel nivel
+    ) {
+        Socio actual = socio(id);
+
+        // Utilizamos Socio para validar primero todos los datos.
+        Socio validado =
+                new Socio(id, nombre, correo, nivel);
+
+        boolean correoRepetido =
+                socios.values().stream()
+                        .anyMatch(s ->
+                                s.id() != id
+                                        && s.correo().equalsIgnoreCase(
+                                        validado.correo()
+                                )
+                        );
+
+        if (correoRepetido) {
+            throw new ReglaNegocioException(
+                    "Ya existe un socio con ese correo"
+            );
+        }
+
+        actual.setNombre(validado.nombre());
+        actual.setCorreo(validado.correo());
+        actual.setNivel(validado.nivel());
+
+        repoSocios.guardar(actual);
+    }
+
+    public boolean retirarSocio(int id) {
+
+        boolean tienePrestamos =
+                registros.values().stream()
+                        .anyMatch(p ->
+                                p.socio().id() == id
+                        );
+
+        if (tienePrestamos) {
+            throw new ReglaNegocioException(
+                    "No se puede eliminar un socio que tiene préstamos registrados"
+            );
+        }
+
+        boolean eliminado =
+                repoSocios.eliminar(id);
+
+        if (eliminado) {
+            socios.remove(id);
+        }
+
+        return eliminado;
+    }
+
     public void cambiarNivel(int idSocio, Nivel nivel) {
         Socio a = socio(idSocio);
         a.setNivel(nivel);

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="mx.tecnm.orizaba.tp.biblioteca.ui.EventosController"
+      spacing="15">
+
+    <padding>
+        <Insets top="20"
+                right="20"
+                bottom="20"
+                left="20"/>
+    </padding>
+
+    <HBox spacing="12">
+
+        <Label text="Bitácora de eventos"
+               styleClass="page-title"/>
+
+        <Button text="Revisar ahora"
+                onAction="#revisarAhora"/>
+
+        <Button text="Limpiar vista"
+                onAction="#limpiar"/>
+
+    </HBox>
+
+    <HBox spacing="10">
+
+        <Label text="Monitor:"/>
+
+        <Label fx:id="lblMonitor"
+               text="-"
+               style="-fx-font-weight: bold;"/>
+
+    </HBox>
+
+    <TableView fx:id="tablaEventos"
+               VBox.vgrow="ALWAYS">
+
+        <columns>
+
+            <TableColumn fx:id="colFecha"
+                         text="Fecha y hora"
+                         prefWidth="170"/>
+
+            <TableColumn fx:id="colTipo"
+                         text="Tipo"
+                         prefWidth="190"/>
+
+            <TableColumn fx:id="colMensaje"
+                         text="Mensaje"
+                         prefWidth="500"/>
+
+        </columns>
+
+    </TableView>
+
+</VBox>

@@ -1,0 +1,201 @@
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-background-color: #f4f6f8;
+    -fx-font-size: 13px;
+}
+
+/* =========================================================
+   MENÚ LATERAL
+   ========================================================= */
+
+.sidebar {
+    -fx-background-color: #263238;
+    -fx-padding: 20;
+    -fx-spacing: 12;
+    -fx-pref-width: 220;
+}
+
+.sidebar-title {
+    -fx-text-fill: white;
+    -fx-font-size: 23px;
+    -fx-font-weight: bold;
+}
+
+.menu-button {
+    -fx-background-color: #37474f;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-padding: 10 16;
+    -fx-cursor: hand;
+    -fx-pref-width: 180;
+}
+
+.menu-button:hover {
+    -fx-background-color: #455a64;
+}
+
+.menu-button:pressed {
+    -fx-background-color: #1c313a;
+}
+
+/* =========================================================
+   CONTENIDO
+   ========================================================= */
+
+.content {
+    -fx-background-color: #f4f6f8;
+    -fx-padding: 22;
+}
+
+.page-title {
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #263238;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #37474f;
+}
+
+.subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #607d8b;
+}
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+.button {
+    -fx-background-color: #e3e8eb;
+    -fx-text-fill: #263238;
+    -fx-background-radius: 5;
+    -fx-padding: 7 14;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #cfd8dc;
+}
+
+.primary-button {
+    -fx-background-color: #1976d2;
+    -fx-text-fill: white;
+}
+
+.primary-button:hover {
+    -fx-background-color: #1565c0;
+}
+
+.danger-button {
+    -fx-background-color: #d32f2f;
+    -fx-text-fill: white;
+}
+
+.danger-button:hover {
+    -fx-background-color: #b71c1c;
+}
+
+.success-button {
+    -fx-background-color: #388e3c;
+    -fx-text-fill: white;
+}
+
+.success-button:hover {
+    -fx-background-color: #2e7d32;
+}
+
+/* =========================================================
+   TABLAS
+   ========================================================= */
+
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #dfe3e6;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #eceff1;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #cfd8dc transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #263238;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #fafafa;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #bbdefb;
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: #102027;
+}
+
+/* =========================================================
+   CAMPOS
+   ========================================================= */
+
+.text-field,
+.combo-box,
+.spinner {
+    -fx-background-color: white;
+    -fx-border-color: #b0bec5;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.text-field:focused,
+.combo-box:focused,
+.spinner:focused {
+    -fx-border-color: #1976d2;
+}
+
+/* =========================================================
+   LISTAS
+   ========================================================= */
+
+.list-view {
+    -fx-background-color: white;
+    -fx-border-color: #dfe3e6;
+    -fx-border-radius: 6;
+}
+
+/* =========================================================
+   TARJETAS / INFORMACIÓN
+   ========================================================= */
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 8;
+    -fx-padding: 16;
+}
+
+.total-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1976d2;
+}
+
+.status-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #455a64;
+}

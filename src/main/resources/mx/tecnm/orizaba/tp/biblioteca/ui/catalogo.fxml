@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="mx.tecnm.orizaba.tp.biblioteca.ui.CatalogoController"
+      spacing="15"
+      styleClass="card">
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+    <HBox spacing="15">
+        <Label text="Catálogo de materiales"
+               styleClass="page-title"/>
+
+        <Button text="Nuevo material"
+                styleClass="primary-button"
+                onAction="#nuevoMaterial"/>
+
+        <Button text="Editar"
+                onAction="#editarMaterial"/>
+
+        <Button text="Eliminar"
+                styleClass="danger-button"
+                onAction="#eliminarMaterial"/>
+
+        <Button text="Actualizar"
+                onAction="#actualizarTabla"/>
+    </HBox>
+
+    <TableView fx:id="tablaMateriales"
+               VBox.vgrow="ALWAYS">
+
+        <columns>
+
+            <TableColumn fx:id="colClave"
+                         text="Clave"
+                         prefWidth="120"/>
+
+            <TableColumn fx:id="colTipo"
+                         text="Tipo"
+                         prefWidth="120"/>
+
+            <TableColumn fx:id="colNombre"
+                         text="Nombre"
+                         prefWidth="280"/>
+
+            <TableColumn fx:id="colPrecio"
+                         text="Precio base"
+                         prefWidth="130"/>
+
+            <TableColumn fx:id="colAtributo"
+                         text="Atributo"
+                         prefWidth="180"/>
+
+        </columns>
+
+    </TableView>
+
+</VBox>

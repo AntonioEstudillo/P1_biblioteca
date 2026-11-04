@@ -22,9 +22,12 @@ public record Signatura(String prefijo, int numero) implements Comparable<Signat
         SECUENCIAS = new ConcurrentHashMap<>();
     }
     /**
-     * Válida que no sea nulo
-     * Válida con el método matches que el formato sea igual que el esperado.
-     * Válida que el número ingresado sea mayor a 0
+     * Válida datos para Signatura
+     * <p>Válida con el método matches que el formato sea igual que el esperado.
+     * Válida que el número ingresado sea mayor a 0</p>
+     * @throws IllegalArgumentException si el prefijo es {@code null},
+     *  *         no contiene exactamente tres letras mayúsculas
+     *  *         o si el número es menor o igual a cero
      * */
     public Signatura {
         // TODO E03: Validar que el prefijo tenga exactamente 3 letras mayúsculas y que el número sea positivo (IllegalArgumentException).
@@ -41,8 +44,12 @@ public record Signatura(String prefijo, int numero) implements Comparable<Signat
     /** Genera la siguiente clave del prefijo indicado (operación atómica). */
 
     /**
-     * Comprobamos con computeIfAbsent que aún no exista el prefijo, de exixtir devuelve AtomicInteger que ya existe, de lo contrario lo crea
-     *aplicamos el método incrementAndGet para aumentar el uno y obtner el número que se incremento
+     * <p>Comprueba con computeIfAbsent que aún no exista el prefijo, de exixtir devuelve AtomicInteger que ya existe, de lo contrario lo crea
+     *aplica el método incrementAndGet para aumentar el uno y obtner el número que se incremento </p>
+     * @param prefijo de las  letras asociadas al material
+     * @return una nueva signatura con el siguiente número disponible
+     * @throws IllegalArgumentException si el prefijo no cumple
+     * con el formato requerido por Signatura
      * */
     public static Signatura siguiente(String prefijo) {
         // TODO E03: Obtener (o crear) la secuencia del prefijo con computeIfAbsent e incrementarla atómicamente.
@@ -54,8 +61,9 @@ public record Signatura(String prefijo, int numero) implements Comparable<Signat
     }
 
     /**
-     * Comprobamos con computeIfAbsent que aún no exista el prefijo, de exixtir devuelve AtomicInteger que ya existe, de lo contrario lo crea
-     *aplicamos acumulateAndGet con la clave del número para acumular el número actual y con la referencia la método obtenemos el número mayor.
+     * Comprueba con computeIfAbsent que aún no exista el prefijo, de exixtir devuelve AtomicInteger que ya existe, de lo contrario lo crea
+     * aplica acumulateAndGet con la clave del número para acumular el número actual y con la referencia la método obtenemos el número mayor.
+     * @param clave objeto de tipo Signatura que representa la clave del material
      * */
     /** Ajusta la secuencia para que nunca genere una clave ya existente (p. ej., tras leer la BD). */
     public static void registrar(Signatura clave) {
@@ -66,9 +74,10 @@ public record Signatura(String prefijo, int numero) implements Comparable<Signat
     }
 
     /**
-     * Válida que no sea nulo
+     * <p>Válida que no sea nulo
      * Válida el formato para que coincida con la expresión dada
-     * Divide el prefijo y el número convirtiendo este de String a Int
+     * Divide el prefijo y el número convirtiendo este de String a Int</p>
+     * @param texto cadena que representa el prefijo del material
      * */
     /** Convierte un texto {@code ABC-0001} en una clave. */
     public static Signatura parse(String texto) {
@@ -85,6 +94,8 @@ public record Signatura(String prefijo, int numero) implements Comparable<Signat
     /**
      * Compara tanto el prefijo como el número con otro
      * Si los prefijos coinciden, compara por número
+     * @param otra representa el otro prefijo que va a comparar
+     * @return regresa un booleano que representa el resultado de la comparación
      * */
     @Override
     public int compareTo(Signatura otra) {

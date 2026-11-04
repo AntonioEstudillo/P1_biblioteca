@@ -47,9 +47,14 @@ public class Prestamo implements Iterable<Prestamo.Linea>, Serializable {
 
     /** Constructor completo (también usado al reconstruir desde la base de datos). */
     /**
-     * Validamos que el id sea mayor que 0
+     * <p>Validamos que el id sea mayor que 0
      * asignamos id
-     * asignamos fecha y socio comprobando que no sean nulos con el método de la clase Object*/
+     * asignamos fecha y socio comprobando que no sean nulos con el método de la clase Object </p>
+     * @param id identificador del socio
+     * @param fecha fecha en que se realiza el prestamo
+     * @param socio datos del socio que será parte del prestamo
+     * @throws ReglaNegocioException en caso de el id sea menor a 0
+     * */
     public Prestamo(int id, Socio socio, LocalDate fecha) {
         // TODO E07: Validar id > 0, actor y fecha no nulos; asignar y sincronizar SECUENCIA con accumulateAndGet(id, Math::max).
         if(id < 0){
@@ -81,10 +86,14 @@ public class Prestamo implements Iterable<Prestamo.Linea>, Serializable {
 
     /** Agrega una línea; sólo es posible mientras está ABIERTA y sin repetir material. */
     /**
-     * Comprobamos que la transaccion sea abierta de lo contrario se devuelve una execpcion
+     * <p>Comprobamos que la transaccion sea abierta de lo contrario se devuelve una execpcion
      * Guardamos el resultado (t o f) de la comparacion del stream anyMatch(Que comprueba que exista un elemento igual)
      * en caso de que existan coincidencias mandamos error
-     * Se crea una unueva linea con los parametros recibidos en el metodo y se agrega al arreglo de lineas*/
+     * Se crea una unueva linea con los parametros recibidos en el metodo y se agrega al arreglo de lineas</p>
+     * @param unidades valor con el que se creara la linea
+     * @param elemento el material que será añadido a la linea del prestamo
+     * @throws ReglaNegocioException en caso que el estado sea diferente a abierta o el material ya haya sido agregado
+     * */
 
     public synchronized Linea agregar(Material elemento, int unidades) {
         // TODO E07: Exigir estado ABIERTA, rechazar elementos repetidos (stream anyMatch), crear la Linea interna y añadirla.
@@ -106,9 +115,10 @@ public class Prestamo implements Iterable<Prestamo.Linea>, Serializable {
 
     /** Quita la línea del material indicado (sólo en estado ABIERTA). */
     /**
-     * Comprobamos que la transaccion sea abierta de lo contrario se devuelve una execpcion
-     * Usamos removeIf sobre la clave de la linea para remover la que coincida con la misma.
-     *
+     * <p>Comprobamos que la transaccion sea abierta de lo contrario se devuelve una execpcion
+     * Usamos removeIf sobre la clave de la linea para remover la que coincida con la misma.</p>
+     * @param clave clave del material a retirar
+     * @throws ReglaNegocioException en caso de que no se encuentre la linea abierta
      * */
     public synchronized boolean quitar(Signatura clave) {
         // TODO E07: Exigir estado ABIERTA y eliminar con removeIf la línea cuyo elemento tenga esa clave.
@@ -120,8 +130,11 @@ public class Prestamo implements Iterable<Prestamo.Linea>, Serializable {
     }
 
     /**
-     * Comprobamos que se permita la transaccion de lo contrario se devuelve una execpcion
-     * Comprobamos que la transaccion corresponda a en curso y que no este vacia
+     * <p>Comprobamos que se permita la transaccion de lo contrario se devuelve una execpcion
+     * Comprobamos que la transaccion corresponda a en curso y que no este vacia</p>
+     * @param destino hacia que estado cambiara
+     * @throws ReglaNegocioException en caso que no sea una transaccion permitida o si no se tiene una linea al menos
+     *
      * */
     public synchronized void cambiarEstado(Estado destino) {
         // TODO E07: Validar la transición con permiteTransicionA y exigir al menos una línea para pasar a EN_CURSO.
@@ -159,9 +172,10 @@ public class Prestamo implements Iterable<Prestamo.Linea>, Serializable {
 
     /** Suma de subtotales sin descuento. */
     /**
-     * Con el uso de streams, hacemos uso del mapeo para sumar cada linea del arreglo de Linea.
+     * <p>Con el uso de streams, hacemos uso del mapeo para sumar cada linea del arreglo de Linea.
      * Hacemos referncia al método subtotal (que nos devuelve el total antes del descuento) de Linea
-     * Redondeamos el total con el metodo redonder que se encuentra en esta clase
+     * Redondeamos el total con el metodo redondear que se encuentra en esta clase</p>
+     * @return el subtotal redondeado por el método redondear()
      * */
     public synchronized double subtotal() {
         // TODO E08: Sumar los subtotales de las líneas con mapToDouble y redondear a 2 decimales.
@@ -173,9 +187,10 @@ public class Prestamo implements Iterable<Prestamo.Linea>, Serializable {
     /** Total con el descuento del nivel del socio. */
 
     /**
-     * Con el uso de streams, hacemos uso del mapeo para sumar cada linea del arreglo de Linea.
+     * <p>Con el uso de streams, hacemos uso del mapeo para sumar cada linea del arreglo de Linea.
      * Hacemos referncia al método importe (que calcula el descuento de socio) de Linea
-     * Redondeamos el total con el metodo redonder que se encuentra en esta clase
+     * Redondeamos el total con el metodo redonder que se encuentra en esta clase</p>
+     * @return el total de los importes redondeado
      * */
     public synchronized double total() {
         // TODO E08: Sumar los importes de las líneas (ya con descuento) y redondear a 2 decimales.
@@ -216,9 +231,13 @@ public class Prestamo implements Iterable<Prestamo.Linea>, Serializable {
 
 
         /**
-         * Evaluamos el que las unidades sean mayor a 0
+         * <p>Evaluamos el que las unidades sean mayor a 0
          * Asignamos elementos (en el cual comprobamos que que no sea null)
-         * Asignamos unidades*/
+         * Asignamos unidades</p>
+         * @param elemento el material de la linea
+         * @param unidades unidades de la linea
+         * @throws ReglaNegocioException en caso de id menor a 0
+         * */
         private Linea(Material elemento, int unidades) {
             // TODO E07: Validar unidades > 0 y asignar los campos.
             if (unidades <= 0) {
@@ -247,7 +266,7 @@ public class Prestamo implements Iterable<Prestamo.Linea>, Serializable {
         /**
          * Usamos this para llamar al presatamo, obtenemos la variable sicio, el método nivel
          * y el método aplicar, en el cual pasamos el subtotal (el cual calcula el subtotal antes de aplicar el descuento)
-         *
+         * @return el subtotal con el descuento aplicado
          * */
         /** Importe con el descuento del nivel del socio de la envolvente. */
         public double importe() {

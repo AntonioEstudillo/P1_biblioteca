@@ -50,9 +50,15 @@ public abstract sealed class Material implements Prestable, Serializable
     }
 
     /**
-     * Válida que no sea nulo con el método requireNotNull de Object
+     * <p>>Válida que no sea nulo con el método requireNotNull de Object
      * Registra la clave a traves del método estático registra de Signature
-     * Asigna nombre y precio base a traves de sus setters.
+     * Asigna nombre y precio base a traves de sus setters.</p>
+     * @param clave signatura previamente asignada al material
+     * @param nombre refiere al nombre del material
+     * @param precioBase precio base del material
+     * @throws NullPointerException si {@code clave} es {@code null}
+     * @throws IllegalArgumentException si el nombre o el precio base
+     * no cumplen con las reglas de validación
      * */
     /** Constructor para objetos reconstruidos (persistencia) con clave conocida. */
     protected Material(Signatura clave, String nombre, double precioBase) {
@@ -93,8 +99,10 @@ public abstract sealed class Material implements Prestable, Serializable
     }
 
     /**
-     * Válida que el nombre no sea nulo y que no sea un espacio en blanco
-     * asigna el nombre recortando los espacios
+     * <p>Válida que el nombre no sea nulo y que no sea un espacio en blanco
+     * asigna el nombre recortando los espacios</p>
+     * @param nombre se refiere al nombre del material
+     * @throws ReglaNegocioException en caso de que no se cumpla la validación
      * */
     public final void setNombre(String nombre) {
         // TODO E04: Rechazar nombres nulos o en blanco (ReglaNegocioException); guardar el nombre sin espacios extremos.
@@ -107,13 +115,16 @@ public abstract sealed class Material implements Prestable, Serializable
 
 
     /**
-     * Valida que sea mayor a 0
+     * <p>Valida que sea mayor a 0
      * con el método isNAN de Double, validad que no sea NaN
      * Valida que no sea infinito con el método isInfinite de Double
      * De no cumplir una de los predicados devuelve una exception
-     * asigna el precio base*/
+     * asigna el precio base </p>
+     * @param precioBase el precio base del material
+     * @throws ReglaNegocioException en caso de que no se cumpla la validación
+     * */
     public final void setPrecioBase(double precioBase) {
-        // TODO E04: Rechazar precios negativos, NaN o infinitos (ReglaNegocioException).
+        // TODO E04: Rechazar precios negativos, NaN o infinitos ReglaNegocioException).
         if(precioBase < 0 || Double.isNaN(precioBase) || Double.isInfinite(precioBase)){
             throw new ReglaNegocioException("Precio base no valido");
         }
@@ -124,11 +135,14 @@ public abstract sealed class Material implements Prestable, Serializable
     /** Método plantilla: valida, contabiliza y redondea; la variación la aporta cada subtipo. */
 
     /**
-     * Válidad que las unidades sean mayor a 0
+     * <p>Válidad que las unidades sean mayor a 0
      * Incrementa en uno las cotizaciones
      * calcula la tarifa atraves del método calcularTarifa
      * Redondea con el método round (al redondear a el entero más cercano se multiplica primero por 100
-     * para correr los decimales, posterior se divide entre 100 para ajustar el punto.)
+     * para correr los decimales, posterior se divide entre 100 para ajustar el punto.)</p>
+     * @param unidades reprensenta las unidades por las cuales se calculara la tarifa
+     * @return la tarifa calculada redondeadad a 2 decimales
+     * @throws ReglaNegocioException en caso de ingresar unidades menores o iguales a 0
      * */
     @Override
     public final double tarifa(int unidades) {
@@ -192,7 +206,9 @@ public abstract sealed class Material implements Prestable, Serializable
             this.paginas = validar(paginas);
         }
         /**
-         *Válida que las páginas sean mayor a 0
+         *
+         *@return eelnumero de páginas
+         * @throws ReglaNegocioException en caso de paginas menores o iguales a 0
          */
 
         private static int validar(int paginas) {
@@ -209,7 +225,7 @@ public abstract sealed class Material implements Prestable, Serializable
         }
 
         /**
-         * Realiza y retorna el cálculo de la cuota con la fórmula dada.
+         * @return  el cálculo de la cuota con la fórmula dada.
          */
         @Override
         protected double calcularTarifa(int unidades) {
@@ -222,7 +238,7 @@ public abstract sealed class Material implements Prestable, Serializable
         /** Retorno covariante: devuelve Libro, no Material. */
 
         /**
-         * Retorna un objeto de Revista tomando los datos que ya se tienen
+         * @return un objeto de Revista tomando los datos que ya se tienen
          * */
         @Override
         public Libro copiar() {
@@ -267,7 +283,9 @@ public abstract sealed class Material implements Prestable, Serializable
             this.antiguedadAnios = validar(antiguedadAnios);
         }
         /**
-         *Válida que la antiguedad sea mayor a 0
+         *@param antiguedadAnios representa la antiguedad en años
+         *@throws ReglaNegocioException en caso de años menores a 0
+         * @return la antiguedad en años
          */
         private static int validar(int antiguedadAnios) {
             // TODO E05: Validar: antiguedadAnios >= 0 (si no se cumple: ReglaNegocioException "La antigüedad no puede ser negativa").
@@ -283,8 +301,10 @@ public abstract sealed class Material implements Prestable, Serializable
         }
 
         /**
-         * Calcula la tarifa a través de un operador ternario, en el cual evalúa las unidades
-         * para determinar si multiplicar por 1 o por 0.5 dependiendo de los años.
+         * <p>Calcula la tarifa a través de un operador ternario, en el cual evalúa las unidades
+         * para determinar si multiplicar por 1 o por 0.5 dependiendo de los años.</p>
+         * @param unidades representa las unidades por las cuales se hará el cálculo
+         * @return devuelve la tarifa calculada, dependiendo de la antigüedad
          * */
         @Override
         protected double calcularTarifa(int unidades) {
@@ -297,7 +317,7 @@ public abstract sealed class Material implements Prestable, Serializable
         /** Retorno covariante: devuelve Revista, no Material. */
 
         /**
-         * Retorna un objeto de Revista tomando los datos que ya se tienen
+         * @return  un objeto de Revista tomando los datos que ya se tienen
          * */
         @Override
         public Revista copiar() {
@@ -344,6 +364,9 @@ public abstract sealed class Material implements Prestable, Serializable
         /**
          * Válida que no se envíen vacíos ni espacios en blanco
          * Recorta los espacios en blanco del retorno
+         * @param grado grado de la tesís
+         * @return el grado de la tesís
+         * @throws ReglaNegocioException en caso de que no se haya ingresado un grado
          * */
         private static String validar(String grado) {
             // TODO E05: Validar: grado != null && !grado.isBlank() (si no se cumple: ReglaNegocioException "El grado académico es obligatorio").
@@ -359,9 +382,10 @@ public abstract sealed class Material implements Prestable, Serializable
         }
 
         /**
-         * Calcula la tarifa a través de un operador ternario, en el cual evalúa las unidades
-         * para determinar si se deja el valor en 0 o hace un descuento de 3 sobre el total de las unidades
-         *
+         * <p>Calcula la tarifa a través de un operador ternario, en el cual evalúa las unidades
+         * para determinar si se deja el valor en 0 o hace un descuento de 3 sobre el total de las unidades</p>
+         * @param unidades representa las unidades(días) por las cuales se hará el cálculo
+         * @return devuelve la tarifa calculada, dependiendo de los días
          * */
 
         @Override
@@ -374,7 +398,7 @@ public abstract sealed class Material implements Prestable, Serializable
 
         /** Retorno covariante: devuelve Tesis, no Material. */
         /**
-         * Retorna un objeto de Tesis tomando los datos que ya se tienen
+         * @return un objeto de Tesis tomando los datos que ya se tienen
          * */
         @Override
         public Tesis copiar() {
@@ -399,7 +423,7 @@ public abstract sealed class Material implements Prestable, Serializable
         /** Resolución explícita de la colisión entre métodos por defecto. */
         /**
          * Sobreescribe el método para evitar la colisión devolviendo una cadena con lo que esta en el método de ambas clase padre
-         *
+         * @return el método sobreescrito para evitar conflictos
          * */
         @Override
         public String descripcionCorta() {

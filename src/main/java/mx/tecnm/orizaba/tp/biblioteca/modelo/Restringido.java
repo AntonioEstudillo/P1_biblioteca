@@ -10,7 +10,7 @@ public interface Restringido {
 
     int nivelAcceso();
     /**
-     * Retorna una cadena concatenada con lo que obtenga el método nivelAcceso()
+     * @return una cadena concatenada con lo que obtenga el método nivelAcceso()
      * */
     default String descripcionCorta() {
         // TODO E05: Devolver "Nivel de acceso: " concatenado con el valor de nivelAcceso().

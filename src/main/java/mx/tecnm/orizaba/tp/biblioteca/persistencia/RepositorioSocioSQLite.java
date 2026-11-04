@@ -21,6 +21,17 @@ public class RepositorioSocioSQLite implements Repositorio<Socio, Integer> {
         this.bd = bd;
     }
 
+
+    /**
+     * Guarda un socio en la base de datos.
+     *
+     * <p>Si el identificador no existe, se inserta un nuevo socio.
+     * Si ya existe, se actualizan su nombre, correo y nivel.</p>
+     *
+     * @param a socio que se desea guardar o actualizar
+     * @throws PersistenciaException si ocurre un error durante
+     * la operación SQL
+     */
     @Override
     public void guardar(Socio a) {
         // TODO E13: Upsert por id con PreparedStatement.
@@ -46,6 +57,15 @@ public class RepositorioSocioSQLite implements Repositorio<Socio, Integer> {
         }
     }
 
+    /**
+     * <p>Busca un socio mediante su identificador.</p>
+     *
+     * @param id identificador del socio que se desea buscar
+     * @return un {@link Optional} con el socio encontrado,
+     *         o vacío si no existe un socio con ese identificador
+     * @throws PersistenciaException si ocurre un error durante
+     *         la consulta o reconstrucción del socio
+     */
     @Override
     public Optional<Socio> buscar(Integer id) {
         // TODO E13: SELECT por id.
@@ -76,7 +96,16 @@ public class RepositorioSocioSQLite implements Repositorio<Socio, Integer> {
             );
         }
     }
-
+    /**
+     *
+     * <p>Recupera todos los socios almacenados en la base de datos
+     * Los registros se reconstruyen como objetos {@link Socio}
+     * y se devuelven ordenados por su identificador</p>
+     *
+     * @return lista con todos los socios almacenados ordenados por identificador
+     * @throws PersistenciaException si ocurre un error durante
+     *         la consulta
+     */
     @Override
     public List<Socio> todos() {
         // TODO E13: SELECT ordenado por id.
@@ -100,7 +129,16 @@ public class RepositorioSocioSQLite implements Repositorio<Socio, Integer> {
             throw new PersistenciaException("No se pudo realizar la consulta socio" +e.getMessage(),e);
         }
     }
-
+    /**
+     * <p>Elimina de la base de datos el socio asociado al
+     * identificador indicado.</p>
+     *
+     * @param id identificador del socio que se desea eliminar
+     * @return {@code true} si se eliminó al menos un registro;
+     * {@code false} si no existía un socio con ese identificador
+     * @throws PersistenciaException si ocurre un error durante
+     * la operación SQL
+     */
     @Override
     public boolean eliminar(Integer id) {
         // TODO E13: DELETE por id.

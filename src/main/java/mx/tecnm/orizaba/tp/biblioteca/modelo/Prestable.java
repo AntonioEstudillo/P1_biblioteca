@@ -24,7 +24,9 @@ public interface Prestable {
 
 
     /**
-     * Calcula el impuesto sumado uno al mismo (para obtener la operación multiplicada por 1.16)
+     * <p>Calcula el impuesto sumado uno al mismo (para obtener la operación multiplicada por 1.16)<p/>
+     * @param unidades la tarifa por la cual se calculara la tasa de impuesto
+     * @return La tarifa calculada después del impuesto, redondeada a 2 decimales
      * */
     /** Método por defecto (extensión de la interfaz sin romper implementaciones). */
     default double tarifaConImpuesto(int unidades) {
@@ -35,9 +37,10 @@ public interface Prestable {
         return Math.round(total * 100.0) / 100.0;
     }
     /**
-     * Utiliza el método estático de comparing de la clase comparator y accede al nombre con la referencia de método
+     * <p>Utiliza el método estático de comparing de la clase comparator y accede al nombre con la referencia de método
      * de Prestable
-     * Indica que se ignore si es mayúscula o minúscula a la hora de ordenar
+     * Indica que se ignore si es mayúscula o minúscula a la hora de ordenar</p>
+     * @return el resultado de la comparacion ignorando mayusculas o minusculas
      * */
     /** Método estático de interfaz: comparador por nombre (referencia a método de objeto arbitrario). */
     static Comparator<Prestable> porNombre() {

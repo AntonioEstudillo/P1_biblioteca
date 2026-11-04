@@ -25,9 +25,14 @@ public class Socio implements Externalizable {
     public Socio() {
     }
     /**
-     * Valida que el id sea menor que 0
+     * <p>Valida que el id sea menor que 0
      * asigna el id
-     * asigna nomnre, correo y nivel através de setters
+     * asigna nomnre, correo y nivel através de setters</p>
+     * @param id identificador del socio
+     * @param nombre nombre del socio
+     * @param correo correo electronico del socio
+     * @param nivel nivel del socio (externo, estudiante, docente)
+     * @throws ReglaNegocioException en caso de que el id sea menor a 0
      * */
     public Socio(int id, String nombre, String correo, Nivel nivel) {
         // TODO E06: Validar id > 0 y asignar nombre, correo y nivel mediante sus setters.
@@ -61,13 +66,16 @@ public class Socio implements Externalizable {
     public Nivel nivel() {
         return nivel;
     }
-
+    /**
+     * <p>Comprueba que el el nnombre nos ea nulo y que no sea un espacio en blanco
+     * recorta espacios en blanco en el nombre antes de asignarlo</p>
+     *
+     * @param nombre nombre del socio
+     * @throws ReglaNegocioException en caso de dejar el nombre en blanco o nulo
+     * */
     public final void setNombre(String nombre) {
         // TODO E06: Rechazar nombre nulo o en blanco.
-        /**
-         * Comprueba que el el nnombre nos ea nulo y que no sea un espacio en blanco
-         * recorta espacios en blanco en el nombre antes de asignarlo
-         * */
+
         if (nombre == null || nombre.isBlank()){
             throw new ReglaNegocioException("Nombre no puede estar vacio");
         }
@@ -75,8 +83,11 @@ public class Socio implements Externalizable {
         this.nombre = nombre.trim();
     }
     /**
-     * Comprueba que el cporreo no sea vacio y compara el formtao con el patron dado
-     * pasa el correo a minusculas*/
+     * <p>Comprueba que el cporreo no sea vacio y compara el formtao con el patron dado
+     * pasa el correo a minusculas</p>
+     * @param correo correo electronico del socio
+     * @throws ReglaNegocioException en caso que el correo no sea vacio o no coincida con el formato
+     * */
     public final void setCorreo(String correo) {
         // TODO E06: Validar el correo con el patrón CORREO y guardarlo en minúsculas.
         if(correo == null || !CORREO.matcher(correo).matches()){
@@ -90,6 +101,10 @@ public class Socio implements Externalizable {
         this.nivel = Objects.requireNonNull(nivel, "nivel");
     }
 
+    /**
+     *<p>Escribe los datos del socio en un flujo de salida</p>
+     * @throws IOException si ocurre un error durante la escritura
+     * */
     @Override
     public void writeExternal(ObjectOutput salida) throws IOException {
         // TODO E14: Escribir id, nombre, correo y el nombre del nivel (writeInt / writeUTF).
@@ -102,6 +117,10 @@ public class Socio implements Externalizable {
 
     }
 
+    /**
+     *<p>Lee los datos del socio en un flujo de entrada</p>
+     * @throws IOException si ocurre un error durante la lectura
+     * */
     @Override
     public void readExternal(ObjectInput entrada) throws IOException {
         // TODO E14: Leer en el mismo orden en que se escribió y reconstruir el nivel con Nivel.valueOf.

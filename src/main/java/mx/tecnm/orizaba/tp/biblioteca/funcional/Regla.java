@@ -14,8 +14,9 @@ public interface Regla<T> {
 
     boolean evaluar(T t);
     /**
-     * Comprobamos que otra no sea nula con el método requireNotNull de Object
-     * retornamos el resultado de la lambda solicitada (T O F)
+     * <p>Comprobamos que otra no sea nula con el método requireNotNull de Object
+     * retornamos el resultado de la lambda solicitada (T O F)</p>
+     * @return resultado de la lambda (verdadero o falso)
      * */
     default Regla<T> y(Regla<? super T> otra) {
         // TODO E11: Devolver la lambda t -> evaluar(t) && otra.evaluar(t) (validar otra no nula).
@@ -24,8 +25,8 @@ public interface Regla<T> {
         return t -> evaluar(t) && otra.evaluar(t);
     }
     /**
-     * Comprobamos que otra no sea nula con el método requireNotNull de Object
-     * retornamos el resultado de la lambda solicitada (T O F)
+     * <p>Comprobamos que otra no sea nula con el método requireNotNull de Object</p>
+     * @return  el resultado de la lambda solicitada (T O F)
      * */
     default Regla<T> o(Regla<? super T> otra) {
         // TODO E11: Devolver la lambda t -> evaluar(t) || otra.evaluar(t).
@@ -35,8 +36,8 @@ public interface Regla<T> {
     }
 
     /**
-     * Comprobamos que otra no sea nula con el método requireNotNull de Object
-     * retornamos el resultado de la lambda solicitada. Negación de T O F
+     * <p>Comprobamos que otra no sea nula con el método requireNotNull de Object</p>
+     * @return  el resultado de la lambda solicitada. Negación de T O F
      * */
 
     default Regla<T> negar() {

@@ -54,7 +54,10 @@ public final class ConexionSQLite implements AutoCloseable {
 
     private final Connection conexion;
 
-    /** @param rutaArchivo archivo .db (se crea si no existe) */
+    /**
+     * <p>abre el archivo .db</p>
+     * @param rutaArchivo archivo .db (se crea si no existe)
+     * @throws PersistenciaException en caso de que no se pueda abrir de manera correcta la conexión*/
     public ConexionSQLite(String rutaArchivo) {
         // TODO E13: Abrir jdbc:sqlite:<ruta>, activar PRAGMA foreign_keys = ON y crear el esquema.
         try {
@@ -80,7 +83,16 @@ public final class ConexionSQLite implements AutoCloseable {
     }
 
     /**
-     * Ejecuta un trabajo dentro de una transacción: confirma si termina bien y revierte ante error.
+     * <p>Ejecuta un trabajo dentro de una transacción: confirma si termina bien y revierte ante error.
+     *
+     * Desactiva temporalmente el modo autocommit, ejecuta el trabajo
+     * recibido y confirma la transacción mediante {@code commit()} si
+     * finaliza correctamente.</p>
+     *
+     * @param <R> tipo del resultado producido por el trabajo
+     * @param trabajo operación SQL que se ejecutará dentro de la transacción
+     * @return el resultado producido por {@code trabajo}
+     * @throws PersistenciaException si ocurre un error durante la ejecución, la reversión o la restauración del modo autocommit
      */
     public <R> R enTransaccion(TrabajoSQL<R> trabajo) {
         // TODO E13: setAutoCommit(false); ejecutar; commit; ante SQLException rollback y PersistenciaException; finalmente setAutoCommit(true).

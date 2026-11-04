@@ -26,10 +26,12 @@ public abstract class TareaPeriodica implements Runnable {
     /** Arranca el hilo (demonio) con el nombre indicado. */
 
     /**
-     * Comprueba si activa es verdadero, si no lanza una exepción
+     * <p>Comprueba si activa es verdadero, si no lanza una exepción
      * se crea un nuevo hilo con los parametros requeridos
      * define el daemon como verdadero
-     * inicia el hilo
+     * inicia el hilo</p>
+     * @param nombreHilo refiere al nombre del hilo
+     * @throws IllegalStateException si se trata de iniciar un hilo ya activo
      * */
     public final synchronized void iniciar(String nombreHilo) {
         // TODO E12: Si ya está activa lanzar IllegalStateException; crear new Thread(this, nombreHilo), marcarlo demonio, activar y start().
@@ -48,11 +50,10 @@ public abstract class TareaPeriodica implements Runnable {
     }
 
     /**
-     * Pasamos activa de true a false
+     * <p>Pasamos activa de true a false
      * comprobamos si el hilo existe
-     * Si es así, lo interrumpimos y esperamos con join()
+     * Si es así, lo interrumpimos y esperamos con join()</p>
      * */
-
     /** Solicita la detención y espera a que el hilo termine. */
     public final void detener() throws InterruptedException {
         // TODO E12: Bajar la bandera, interrumpir el hilo y esperar con join() (si existe).
@@ -73,12 +74,10 @@ public abstract class TareaPeriodica implements Runnable {
     }
 
     /**
-     *Usamos un ciclo while mientras activa sea verdadero
+     *<p>Usamos un ciclo while mientras activa sea verdadero
      *dentro del ciclo, utilizamos el método ejecutarCiclo y aumentamos en 1 la variable ciclos
-     *Usamos un try/catch para poder ejecutar el método sleep de Thread .
+     *Usamos un try/catch para poder ejecutar el método sleep de Thread .</p>
      * */
-
-
     @Override
     public final void run() {
         // TODO E12: Mientras activa: ejecutarCiclo(), incrementar ciclos y dormir periodoMs; ante InterruptedException restaurar la interrupción y salir.

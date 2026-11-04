@@ -26,9 +26,11 @@ public enum Nivel {
     }
 
     /**
-     * Realiza la operacion para clacular el descuento
+     * <p>Realiza la operacion para clacular el descuento
      * Redondea a 2 decimales con Math (al redondear al entero más cercano se multiplica primero por 100
-     *  para correr los decimales, posterior se divide entre 100 para ajustar el punto.)
+     *  para correr los decimales, posterior se divide entre 100 para ajustar el punto.)</p>
+     * @param monto representa el monto del material
+     * @return el total después del descuento redondeado a 2 decimales
      * */
     /** Aplica el descuento del nivel a un monto, redondeando a 2 decimales. */
     public double aplicar(double monto) {

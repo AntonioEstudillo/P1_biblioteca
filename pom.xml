@@ -45,7 +45,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.5.0</version>
-        <configuration><mainClass>${exec.mainClass}</mainClass></configuration>
+        <configuration><mainClass>${exec.mainClass}</mainClass> </configuration>
       </plugin>
 
       <plugin>
@@ -56,6 +56,17 @@
           <mainClass>
             mx.tecnm.orizaba.tp.biblioteca.app.BibliotecaApp
           </mainClass>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.12.0</version>
+        <configuration>
+          <failOnWarnings>false</failOnWarnings>
+
+          <doclint>all,-missing</doclint>
         </configuration>
       </plugin>
 

@@ -47,7 +47,10 @@ RepositorioMaterialSQLite implements Repositorio<Material, Signatura> {
         this.bd = bd;
     }
 
-    /** Atributo específico del subtipo, obtenido con pattern matching. */
+    /** Atributo específico del subtipo, obtenido con pattern matching.
+     * @param e Representa el tipo de material que se evalaura en el switch.
+     * @return regresa el case de un swicth, dependiendo del material recibido
+     * */
     static String atributoDe(Material e) {
         // TODO E13: switch (e) { case Material.Libro x -> ...; ... } sin default (la jerarquía es sellada).
         return switch (e){
@@ -60,6 +63,11 @@ RepositorioMaterialSQLite implements Repositorio<Material, Signatura> {
         };
     }
 
+    /**
+     * <p>Si la clave del material no existe, se inserta un nuevo
+     *  registro. Si ya existe, se actualizan</p>
+     * @param e material que se desea guardar o actualizar
+     * @throws PersistenciaException si ocurre un error durante la operación SQL*/
     @Override
     public void guardar(Material e) {
         // TODO E13: INSERT ... ON CONFLICT(clave) DO UPDATE ... con PreparedStatement.
@@ -86,6 +94,15 @@ RepositorioMaterialSQLite implements Repositorio<Material, Signatura> {
         }
     }
 
+
+    /**
+     * <p>Si se encuentra una fila con la clave indicada, sus datos
+     *  se reconstruyen como el subtipo de {@link Material}
+     *  correspondiente</p>
+     *
+     * @param clave signatura del material que se desea buscar
+     * @return un {@link Optional} con el material encontrado o vacío si no existe un material con esa clave
+     * @throws PersistenciaException si ocurre un error durante la consulta o reconstrucción del material*/
     @Override
     public Optional<Material> buscar(Signatura clave) {
         // TODO E13: SELECT por clave; mapear con mapeador si hay fila.
@@ -112,6 +129,16 @@ RepositorioMaterialSQLite implements Repositorio<Material, Signatura> {
         }
 
     }
+    /**
+     * <p>Cada fila se reconstruye como el subtipo de material
+     *  correspondiente y los resultados se devuelven ordenados
+     *  por su clave.</p>
+     *
+     *  @return lista con todos los materiales almacenados,
+     *  ordenados por signatura
+     *  @throws PersistenciaException si ocurre un error durante
+     *  la consulta o reconstrucción de los materiales
+     *  */
 
     @Override
     public List<Material> todos() {
@@ -134,7 +161,16 @@ RepositorioMaterialSQLite implements Repositorio<Material, Signatura> {
            throw new PersistenciaException("Error al consultar",e);
        }
     }
-
+    /**
+     * <p>Elimina de la base de datos el material asociado a la
+     *  signatura indicada.</p>
+     *
+     *  @param clave signatura del material que se desea eliminar
+     *  @return {@code true} si se eliminó al menos un registro;
+     *  {@code false} si no existía un material con esa clave
+     *  @throws PersistenciaException si ocurre un error durante la operación SQL
+     *
+     * */
     @Override
     public boolean eliminar(Signatura clave) {
         // TODO E13: DELETE por clave; devolver si se afectó alguna fila.

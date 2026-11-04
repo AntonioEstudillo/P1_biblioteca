@@ -34,8 +34,10 @@ public class Acervo implements Iterable<Material>, Serializable {
 
 
     /**
-     * El método recibe una cantidad variable de argumentos y se recorren con un cliclo for
-     * el método putIfAbsent evita las claves duplicadas, si no existe devuelve null, si existe devuelve la clave anterior
+     * <p>El método recibe una cantidad variable de argumentos y se recorren con un cliclo for
+     * el método putIfAbsent evita las claves duplicadas, si no existe devuelve null, si existe devuelve la clave anterior </p>
+     * @param nuevos uno o más objetos de tipo Material
+     * @throws ReglaNegocioException en caso de que el material sea nulo o la clave ya exista
      * */
     public final void agregar(Material... nuevos) {
         // TODO E09: Recorrer los argumentos; rechazar nulos y claves duplicadas (ReglaNegocioException); usar putIfAbsent.
@@ -65,25 +67,29 @@ public class Acervo implements Iterable<Material>, Serializable {
 
 
     /**
-     * Regla<? super Material> regla = generico con límite superior
+     * Filtrado con la interfaz funcional propia {@link Regla}.
+     * <p>
      * Con el método de stream filtramos los valores de Material
-     * Con la referencia al método accedemos al método de la interfaz que permite hacer ña evalucación
-     * toList() para retornar una lista
+     * Con la referencia al método accedemos al método de la interfaz que permite hacer la evalucación
+     * toList() para retornar una lista</p>
+     * @param regla objeto de Material o inferior
+     * @return una lista con los elementos filtrados
      * */
-    /** Filtrado con la interfaz funcional propia {@link Regla}. */
     public List<Material> filtrar(Regla<? super Material> regla) {
         // TODO E09: Stream de los valores filtrado con regla::evaluar y recolectado con toList().
         return elementos.values().stream().filter(regla::evaluar).toList();
     }
 
     /**
-     *<E extends Material> = Limete inferior
+     * Filtrado por subtipo con genéricos acotados: {@code deTipo(Material.Libro.class)}
+     * <p>
      * Recupera el valor de los elementos
      * filtra si es la instancia que se espera
      * Map::cast se asegura de que el tipo sea del tipo esperado
-     * se retorna en fornato de lista
+     * se retorna en fornato de lista </p>
+     * @param tipo subtipo del material buscado
+     * @return una lista de los materiales de insntacia de valores esperados
      * */
-    /** Filtrado por subtipo con genéricos acotados: {@code deTipo(Material.Libro.class)}. */
     public <E extends Material> List<E> deTipo(Class<E> tipo) {
         // TODO E09: Usar filter(tipo::isInstance) y map(tipo::cast).
         return elementos.values().stream().filter(tipo::isInstance).map(tipo::cast).toList();
@@ -95,14 +101,17 @@ public class Acervo implements Iterable<Material>, Serializable {
 
 
     /**
-     * Utilizamos una clase anonima para implementar Comparator
+     *  Comparador implementado con una <strong>clase anónima</strong> que captura la variable
+     *  {@code unidades} (efectivamente final; véase {@code Parcel09}).
+     *
+     * <p>Utilizamos una clase anonima para implementar Comparator
      * compara 2 tipos de materiales (libro, tesis, o revista)
-     * Devuelve el resultado entre la comparación de la taria, dependiendo de las unidades capturadas por el método
+     * Devuelve el resultado entre la comparación de la tarifa,
+     * dependiendo de las unidades capturadas por el método </p>
+     *
+     * @param unidades utilizadas para el calculo de la tarifa
+     * @return el resultado de la comparacion
      * */
-    /**
-     * Comparador implementado con una <strong>clase anónima</strong> que captura la variable
-     * {@code unidades} (efectivamente final; véase {@code Parcel09}).
-     */
     public static Comparator<Material> porTarifa(final int unidades) {
         // TODO E10: Devolver new Comparator<>() { compare(a, b) → Double.compare(a.tarifa(unidades), b.tarifa(unidades)) }.
         return new Comparator<Material>() {
@@ -114,14 +123,13 @@ public class Acervo implements Iterable<Material>, Serializable {
     }
 
     /**
-     * Se declara la clase local Acumulador con las variables solicitadas
+     * Resumen calculado con una <strong>clase local</strong> (véase {@code Parcel05}).
+     * <p>Se declara la clase local Acumulador con las variables solicitadas
      * Se agrega el método vacio agregae, donde se reraliza la operaciones de acumulación y se declaran el minimo y el maximo
      * Se crea un objeto de la clase interna y se recorre el catalogo con un ciclo for
-     *Se da formato a la salida
+     *Se da formato a la salida</p>
+     * @return la serie de resultados obtenidos
      * */
-
-
-    /** Resumen calculado con una <strong>clase local</strong> (véase {@code Parcel05}). */
     public String resumen() {
         // TODO E10: Declarar dentro del método la clase local Acumulador (cuenta, suma, mínimo, máximo) y recorrer el catálogo.
        class Acumulador {
@@ -184,9 +192,10 @@ public class Acervo implements Iterable<Material>, Serializable {
 
 
         /**
-         * Compara siexiste el siguiente con el método hasNext()
+         * <p>Compara si existe el siguiente con el método hasNext()</p>
          *
-         * Retorna el cursor aumentando en 1
+         * @return  el cursor aumentando en 1
+         * @throws NoSuchElementException en caso de no existir elemento siguiente
          * */
         @Override
         public Material next() {

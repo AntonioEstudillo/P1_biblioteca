@@ -19,9 +19,10 @@ public enum Estado {
 
 
     /**
-     * Se crea un switch en el que abarca los casos de los posibles estados
-     * Indica a que esatdo es posible pasar dependiendo del estado en el que se encuentre
-     *
+     * <p>Se crea un switch en el que abarca los casos de los posibles estados
+     * Indica a que esatdo es posible pasar dependiendo del estado en el que se encuentre</p>
+     * @param destino representa el estado que se desea evaluar
+     * @return Retorna el caso correspondiente al estado
      * */
     /** Indica si la transición hacia {@code destino} es válida (switch como expresión). */
     public boolean permiteTransicionA(Estado destino) {

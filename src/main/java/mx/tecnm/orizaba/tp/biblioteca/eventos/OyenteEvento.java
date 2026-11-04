@@ -14,7 +14,8 @@ public interface OyenteEvento {
 
     /**
      * Se crea la lambda que primero atiende la notificscion de this (El oyente actual) y posteriormente del parametro siguiente
-     *
+     * @param siguiente El siguiente oyente a notificar
+     * @return notificacion al oyente actual ya la siguiente
      * */
 
     /** Composición secuencial de oyentes (función de orden superior). */

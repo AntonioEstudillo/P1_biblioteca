@@ -10,7 +10,7 @@ public interface Digitalizable {
 
     String urlRepositorio();
     /**
-     * Retorna la cadena concatenada con lo que obtenga el método urlRepositorio();
+     * @return  la cadena concatenada con lo que obtenga el método urlRepositorio();
      * */
     default String descripcionCorta() {
         // TODO E05: Devolver "Repositorio digital: " concatenado con el valor de urlRepositorio().

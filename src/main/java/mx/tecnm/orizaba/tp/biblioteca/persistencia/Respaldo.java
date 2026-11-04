@@ -29,17 +29,22 @@ public final class Respaldo {
     }
 
 
-    /**
-     * Se crea el flujo de salida
-     * Escribimos los campos requeridos en el archivo.
-     * Registro y socio se escribe como arrayList para escribir los datos que estan dentro de ellos.
-     *
-     * */
+
     /** Contenido recuperado de un respaldo. */
     public record Contenido(String encabezado, LocalDateTime fecha, Acervo catalogo,
                             List<Socio> socios, List<Prestamo> registros) {
     }
-
+    /**
+     * <p>Se crea el flujo de salida
+     * Escribimos los campos requeridos en el archivo.
+     * Registro y socio se escribe como arrayList para escribir los datos que están dentro de ellos.</p>
+     * @param archivo ruta del archivo
+     * @param catalogo elemntos del catalogo que se exportarán
+     * @param registros registros que se utilizan para exportar.
+     * @param socios socio que se utiliza en el flujo
+     *
+     * @throws IOException en caso de que exista un error durante el flujo
+     * */
     public static void exportar(Path archivo, Acervo catalogo, Collection<Socio> socios,
                                 Collection<Prestamo> registros) throws IOException {
         // TODO E14: ObjectOutputStream(BufferedOutputStream(Files.newOutputStream)): encabezado, fecha, catálogo, listas.
@@ -55,10 +60,13 @@ public final class Respaldo {
         }
     }
     /**
-     * Crea el flujo de entrada
+     * <p>Crea el flujo de entrada
      * Leemos el encabeza y comprobamos que sea valido
-     *Recuperamos los objetos mediante Upcasting
-     * retornamos un objeto de Contenido con los datos recuperados
+     * Recuperamos los objetos mediante Upcasting
+     * retornamos un objeto de Contenido con los datos recuperados</p>
+     * @param archivo ruta del archivo
+     * @throws IOException en caso de que exista error en el flujo
+     * @throws ClassNotFoundException en caso de que la clase que se busca no sea encontrada
      * */
     @SuppressWarnings("unchecked")
     public static Contenido importar(Path archivo) throws IOException, ClassNotFoundException {

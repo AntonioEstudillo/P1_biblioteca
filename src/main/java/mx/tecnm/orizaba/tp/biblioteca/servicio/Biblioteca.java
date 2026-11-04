@@ -72,11 +72,12 @@ public class Biblioteca implements AutoCloseable {
     }
 
     /**
-     * Se crean los tres repositorios con las variables ya declaradas pasandoles la conexion a DB
-     * se asigina la variable reloj a través del paranetro que recibe el método
+     * <p>Se crean los tres repositorios con las variables ya declaradas pasandoles la conexion a DB
+     * se asigina la variable reloj a través del paranetro que recibe el método</p>
+     * @param reloj proveedor de la fecha actual (inyectable para pruebas y simulación)
+     * @param bd conexión a la base de datos
      * */
 
-    /** @param reloj proveedor de la fecha actual (inyectable para pruebas y simulación) */
     public Biblioteca(ConexionSQLite bd, Supplier<LocalDate> reloj) {
         // TODO E15: Crear los tres repositorios SQLite, asignar el reloj y cargar los datos existentes en memoria.
         this.repoElementos = new RepositorioMaterialSQLite(bd);
@@ -89,8 +90,8 @@ public class Biblioteca implements AutoCloseable {
     }
 
     /**
-     * Usamos la refrencia al métodoa agregar a través de la instancia de catalogo
-     * El método cambia en socio y registro ya que ambos son Map y necesitan guardar 2 cosas
+     * <p>Usamos la refrencia al métodoa agregar a través de la instancia de catalogo
+     * El método cambia en socio y registro ya que ambos son Map y necesitan guardar 2 cosas</p>
      * */
 
     private void cargar() {
@@ -120,15 +121,13 @@ public class Biblioteca implements AutoCloseable {
     // ------------------------------------------------------------------ catálogo
 
     /**
-     * Creamos con la fabirca la plantilla para familias de elementos
-     *guardamos el elemento en su repositorio
-     * Se agrega al catalogo
-     * Se publica a través de su método
-     * */
-
-    /**
      * Alta genérica de cualquier subtipo mediante una fábrica (función de orden superior).
      * Ejemplo: {@code registrar(Material.Libro::new, "...", 100.0, 420)}.
+     *
+     * Crea con la fabirca la plantilla para familias de elementos
+     * guarda el elemento en su repositorio
+     * Se agrega al catalogo
+     * Se publica a través de su método
      */
     public <E extends Material, A> E registrar(FabricaElemento<E, A> fabrica, String nombre, double precio, A atributo) {
         // TODO E15: Crear con la fábrica, persistir, agregar al catálogo, publicar ALTA y devolver el elemento.
@@ -148,10 +147,12 @@ public class Biblioteca implements AutoCloseable {
         repoElementos.guardar(elemento);
     }
     /***
-     * Recuperamos un boleano que comprueba el estado a traves de un stream com FlatMap(permite transformar el map en un solo flujo)
-     *donde la clave coincida con la clave deseada
+     * <p>Recuperamos un boleano que comprueba el estado a traves de un stream com FlatMap(permite transformar el map en un solo flujo)
+     * donde la clave coincida con la clave deseada
      * Si devuelve verdadero, no se podría eliminar y se lanzará una excepción
-     * Se eliminará solo si este se encuentra primero en el sistema
+     * Se eliminará solo si este se encuentra primero en el sistema</p>
+     * @param clave identificador de tipo Signatura
+     * @return regresa el resultado de eliminado (T o F)
      */
 
     public boolean retirar(Signatura clave) {
@@ -182,11 +183,17 @@ public class Biblioteca implements AutoCloseable {
 
     // ------------------------------------------------------------------ socios
     /**
-     *Se evalua si el correo ya existe, de ser así se lanza un excepcion.
+     * <p>Se evalua si el correo ya existe, de ser así se lanza un excepcion.
      * Aumenta el id utilizando un stream, con optinnal devuelve cero en caso de no haber registros
      * aumenta en 1 el id
      * Crea el objeto de socio y lo guarda en el repositorio
-     * publica el alta del socio
+     * publica el alta del socio</p>
+     *
+     * @param nombre nombre del socio
+     * @param correo correo electronico del socio
+     * @param nivel nivel del socio (Docente, estudiante, externo)
+     * @return devuelve un socio con sus parametros aasignados
+     * @throws ReglaNegocioException en caso de que ya exista un socio con el correo que se intenta registrar
      * */
     public Socio registrarSocio(String nombre, String correo, Nivel nivel) {
         // TODO E15: Rechazar correos repetidos; id = máximo actual + 1 (stream mapToInt/max); persistir y publicar ALTA.
@@ -281,11 +288,14 @@ public class Biblioteca implements AutoCloseable {
 
     // ------------------------------------------------------------------ préstamos
     /**
-     * Se recupera el socio
+     * <p>Recupera el socio
      * Aumenta el id utilizando un stream, con optional devuelve cero en caso de no haber registros
      * aumenta en 1 el id
      * Crea el objeto de prestamo y lo guarda en el repositorio
-     * publica el pretamo cambiando el estado.
+     * publica el pretamo cambiando el estado.</p>
+     *
+     * @param idSocio identificador del socio
+     * @return prestamo con sus parametros iniciados
      * */
 
     public Prestamo abrir(int idSocio) {
@@ -304,9 +314,12 @@ public class Biblioteca implements AutoCloseable {
             return prestamo;
     }
     /**
-     * Refcuperamos el prestamo y el material
-     * Agregamos la linea
-     * Guardamos el prestamo en el repositorio
+     * <p>Recupera el prestamo y el material
+     * Agrega la linea
+     * Guarda el prestamo en el repositorio</p>
+     * @param clave clave que identifica al material
+     * @param unidades número de unidades utilizadas durante el prestamo
+     * @param idPrestamo identificador del prestamo
      * */
 
     public Prestamo.Linea agregarLinea(int idPrestamo, String clave, int unidades) {
@@ -341,14 +354,16 @@ public class Biblioteca implements AutoCloseable {
         transitar(idPrestamo, Prestamo::cancelar);
     }
 
-    /**
-     * Localizamos el prestamo
+
+
+    /** Orden superior: la transición concreta llega como {@link Consumer} (referencia a método).
+     * <p>Localizamos el prestamo
      * Posterior aplicamos la transicion recibida con accept del metodo de Consumer
      * guardamos en el repositorio
-     * publicamos el prestamo cambiando el estado
+     * publicamos el prestamo cambiando el estado</p>
+     * @param id identificador de la transición
+     * @param transicion objeto de Consumer que solo acepta objetos de tipo Prestamo
      * */
-
-    /** Orden superior: la transición concreta llega como {@link Consumer} (referencia a método). */
     private void transitar(int id, Consumer<Prestamo> transicion) {
         // TODO E15: Aplicar la transición, persistir y publicar CAMBIO_ESTADO.
         Prestamo prestamo = registro(id);
@@ -380,12 +395,12 @@ public class Biblioteca implements AutoCloseable {
     }
 
     /**
-     * Utilizamos flatMap para agrupar las lineas de los prestamos
+     * Ingresos por subtipo (sólo registros cerrados).
+     * <p>Utilizamos flatMap para agrupar las lineas de los prestamos
      * Agrupamos las lineas con su tipo de material utilizando groupingBy, Treemap pora ordenar el resultado
      * y utilizamos Collectors.summingDouble para sumar los importes
-     * a los que accedemos a traves de la referencia al método de importe
+     * a los que accedemos a traves de la referencia al método de importe</p>
      * */
-    /** Ingresos por subtipo (sólo registros cerrados). */
     public Map<String, Double> ingresosPorTipo() {
         // TODO E16: flatMap de líneas; groupingBy(tipo, TreeMap::new, summingDouble(importe)).
         return cerrados().flatMap(p-> p.lineas().stream())
@@ -393,10 +408,10 @@ public class Biblioteca implements AutoCloseable {
 
     }
     /**
-     * Accedemos a las lineas de los métodos que ya han sido cerrados
-     * Agrupamos las lineas por mnaterial y sumamos las unidades de estas
+     * El material con más unidades en registros cerrados.
+     * <p>Accedemos a las lineas de los métodos que ya han sido cerrados
+     * Agrupamos las lineas por mnaterial y sumamos las unidades de estas</p>
      * */
-    /** El material con más unidades en registros cerrados. */
     public Optional<Material> masDemandado() {
         // TODO E16: groupingBy(elemento, summingInt(unidades)) y máximo por valor con Map.Entry.comparingByValue().
         return cerrados().flatMap(p->p.lineas().stream())
@@ -404,16 +419,14 @@ public class Biblioteca implements AutoCloseable {
                 .entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey);
     }
     /**
-     * Recuperamos los cerrados y los agrupamos por socio
+     * Los {@code n} socios con mayor importe acumulado.
+     * <p>Recuperamos los cerrados y los agrupamos por socio
      * sumamos los totales
      * convertimos las entradas del map en un stream
-     * utilizamos Map.Entry.<Socio, Double>comparingByValue() para ordenar de mayor a menor
+     * utilizamos Map.Entry.Socio, Double comparingByValue() para ordenar de mayor a menor
      * y reversed() para hacer lo contrario
-     * limitamos el numero de lineas segun el parametro ingresado
-     *
-     *
+     * limitamos el numero de lineas segun el parametro ingresado</p>
      * */
-    /** Los {@code n} socios con mayor importe acumulado. */
     public List<Socio> mejores(int n) {
         // TODO E16: groupingBy(actor, summingDouble(total)); ordenar descendentemente por valor; limit(n).
         return cerrados().collect(Collectors.groupingBy(Prestamo::socio,Collectors.summingDouble(Prestamo::total)))
@@ -421,19 +434,26 @@ public class Biblioteca implements AutoCloseable {
                 .limit(n).map(Map.Entry::getKey).toList();
     }
     /**
-     * Obtiene las estadisticas con summary a traves del stream
-     *
+     * <p>Obtiene las estadisticas con summary a traves del stream</p>
      * */
-
     public DoubleSummaryStatistics estadisticas() {
         // TODO E16: mapToDouble(Prestamo::total).summaryStatistics() sobre los cerrados.
         return cerrados().mapToDouble(Prestamo::total).summaryStatistics();
     }
     /**
-     * Usamos StreamSupport para poder recorrer el catalogo
-     * recolectamos los datos utlizando la lambda proporcionada
+     * Divide los materiales del catálogo en dos grupos de acuerdo
+     * con un umbral de precio.
      *
-     * */
+     * <p>Los materiales cuyo precio base sea mayor o igual que
+     * {@code umbral} se almacenan bajo la clave {@code true},
+     * mientras que los materiales con precio menor al umbral
+     * se almacenan bajo la clave {@code false}.</p>
+     *
+     * @param umbral precio utilizado como criterio para realizar
+     *               la partición
+     * @return un mapa con dos grupos de materiales, identificados
+     *         mediante las claves {@code true} y {@code false}
+     */
     public Map<Boolean, List<Material>> particionarPorPrecio(double umbral) {
         // TODO E16: partitioningBy(e -> e.precioBase() >= umbral).
         return StreamSupport.stream(catalogo.spliterator(),false)
@@ -449,20 +469,32 @@ public class Biblioteca implements AutoCloseable {
         return catalogo.filtrar(regla);
     }
 
-    /** Proyección genérica (orden superior). */
     /**
-     * Recorre el catalogo y guarda los resultados por clave en ua lista
-     * */
+     * Aplica una función de transformación a todos los materiales
+     * del catálogo y devuelve los resultados en una lista.
+     *
+     * <p>Los materiales se recorren ordenados por su signatura y
+     * cada elemento se transforma mediante la función recibida.</p>
+     *
+     * @param <R> tipo de los valores obtenidos después de aplicar
+     *            la función de transformación
+     * @param funcion función que transforma cada material en un
+     *                valor del tipo {@code R}
+     * @return una lista con los resultados de aplicar la función
+     *         a los materiales ordenados por clave
+     * @throws NullPointerException si {@code funcion} es {@code null}
+     */
     public <R> List<R> proyectar(Function<? super Material, ? extends R> funcion) {
         // TODO E16: Recorrer el catálogo ordenado por clave y aplicar map(funcion).
         return catalogo.ordenados(Comparator.comparing(Material::clave)).stream().<R>map(funcion).toList();
     }
 
     /**
-     *Se crea un switch para describir diferentes casos de la biblioteca
-     * Se usa when para crear una condición en donde se encuentre un libro mayor a 500 páginas
+     * <p>Descripción con <em>pattern matching</em> exhaustivo sobre la jerarquía sellada (sin default).
+     * Se crea un switch para describir diferentes casos de la biblioteca
+     * Se usa when para crear una condición en donde se encuentre un libro mayor a 500 páginas</p>
+     * @param e material que se usa para evaluar el switch
      * */
-    /** Descripción con <em>pattern matching</em> exhaustivo sobre la jerarquía sellada (sin default). */
     public String describir(Material e) {
         // TODO E16: switch (e) con un caso por subtipo y al menos un caso con guarda "when".
        return switch (e){
@@ -493,9 +525,9 @@ public class Biblioteca implements AutoCloseable {
     // ------------------------------------------------------------------ monitor
 
     /**
-     * Un ciclo de revisión (síncrono y probado de forma determinista):
+     * <p>Un ciclo de revisión (síncrono y probado de forma determinista):
      * cancela registros ABIERTOS sin líneas con al menos un día de antigüedad y emite una
-     * ALERTA (una sola vez) por cada registro EN_CURSO con más de {@link #PLAZO_DIAS} días.
+     * ALERTA (una sola vez) por cada registro EN_CURSO con más de {@link #PLAZO_DIAS} días.</p>
      *
      * @return número de acciones realizadas
      */
@@ -536,7 +568,8 @@ public class Biblioteca implements AutoCloseable {
     }
 
     /**
-     * Se crea el nuevo monitor interno y se inicia con el método iniciar.
+     * <p>Se crea el nuevo monitor interno y se inicia con el método iniciar.</p>
+     * @param periodoMs número de milisegundos que durara el periodo
      * */
 
     public synchronized void iniciarMonitor(long periodoMs) {
@@ -567,6 +600,10 @@ public class Biblioteca implements AutoCloseable {
         private MonitorVencimientos(long periodoMs) {
             super(periodoMs);
         }
+
+        /**
+         * <p>Rrecurre al método revisar de la misma clase</p>
+         * */
 
         @Override
         protected void ejecutarCiclo() {

@@ -1,0 +1,471 @@
+@startuml
+title P1 – Sistema de Préstamos de una Biblioteca Universitaria
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package modelo {
+  interface Prestable {
+    {static} +TASA_IMPUESTO : double
+    +clave() : Signatura
+    +nombre() : String
+    +precioBase() : double
+    +tarifa(u : int) : double
+    +tarifaConImpuesto(u : int) : double
+    {static} +porNombre() : Comparator
+  }
+
+  interface Digitalizable {
+    +urlRepositorio() : String
+    +descripcionCorta() : String
+  }
+
+  interface Restringido {
+    +nivelAcceso() : int
+    +descripcionCorta() : String
+  }
+
+  abstract class Material <<sealed>> {
+    -clave : Signatura
+    -nombre : String
+    -precioBase : double
+    -creadoEn : LocalDateTime
+    -cotizaciones : int <<transient>>
+    +setNombre(nombre : String)
+    +setPrecioBase(precio : double)
+    +tarifa(u : int) : double <<final>>
+    {abstract} #calcularTarifa(u : int) : double
+    {abstract} +copiar() : Material
+  }
+
+  class "Material.Libro" as Libro <<static final>> {
+    {static} +PREFIJO : String = "LIB"
+    -paginas : int
+    +paginas() : int
+    #calcularTarifa(u : int) : double
+    +copiar() : Libro
+  }
+
+  class "Material.Revista" as Revista <<static final>> {
+    {static} +PREFIJO : String = "REV"
+    -antiguedadAnios : int
+    +antiguedadAnios() : int
+    #calcularTarifa(u : int) : double
+    +copiar() : Revista
+  }
+
+  class "Material.Tesis" as Tesis <<static final>> {
+    {static} +PREFIJO : String = "TES"
+    -grado : String
+    +grado() : String
+    #calcularTarifa(u : int) : double
+    +copiar() : Tesis
+  }
+
+  class Signatura <<record>> {
+    prefijo : String
+    numero : int
+    {static} +siguiente(prefijo : String) : Signatura
+    {static} +parse(texto : String) : Signatura
+    {static} +registrar(clave : Signatura)
+  }
+
+  enum Nivel {
+    EXTERNO
+    ESTUDIANTE
+    DOCENTE
+    +aplicar(monto : double) : double
+    +descuento() : double
+    +etiqueta() : String
+  }
+
+  enum Estado {
+    ABIERTA
+    EN_CURSO
+    CERRADA
+    CANCELADA
+    +permiteTransicionA(d : Estado) : boolean
+    +etiqueta() : String
+  }
+
+  class Socio <<Externalizable>> {
+    -id : int
+    -nombre : String
+    -correo : String
+    -nivel : Nivel
+    +id() : int
+    +nombre() : String
+    +correo() : String
+    +nivel() : Nivel
+    +setNombre(nombre : String)
+    +setCorreo(correo : String)
+    +setNivel(nivel : Nivel)
+  }
+
+  class Prestamo {
+    -id : int
+    -fecha : LocalDate
+    -estado : Estado
+    +id() : int
+    +socio() : Socio
+    +fecha() : LocalDate
+    +estado() : Estado
+    +agregar(e : Material, u : int) : Linea
+    +quitar(clave : Signatura) : boolean
+    +iniciar()
+    +cerrar()
+    +cancelar()
+    +lineas() : List<Linea>
+    +subtotal() : double
+    +total() : double
+  }
+
+  class "Prestamo.Linea" as Linea <<inner>> {
+    -elemento : Material
+    -unidades : int
+    +elemento() : Material
+    +unidades() : int
+    +subtotal() : double
+    +importe() : double
+  }
+
+  class Acervo {
+    +agregar(e : Material...)
+    +buscar(clave : Signatura) : Optional<Material>
+    +eliminar(clave : Signatura) : boolean
+    +filtrar(r : Regla) : List
+    +deTipo(tipo : Class<E>) : List<E>
+    {static} +porTarifa(u : int) : Comparator
+    +resumen() : String
+  }
+
+  class "Acervo.Iterador" as Iterador <<private inner>>{
+    +hasNext() : boolean
+    +next() : Material
+  }
+}
+
+package funcional {
+  interface "Regla<T>" as Regla <<functional>> {
+    +evaluar(t : T) : boolean
+    +y(o) : Regla
+    +o(o) : Regla
+    +negar() : Regla
+  }
+
+  interface "FabricaElemento<E extends Material, A>" as Fabrica <<functional>> {
+    +crear(nombre, precio, atributo : A) : E
+  }
+}
+
+package concurrencia {
+  abstract class TareaPeriodica implements Runnable {
+    -activa : boolean <<volatile>>
+    +iniciar(nombre : String)
+    +detener()
+    {abstract} #ejecutarCiclo()
+  }
+}
+
+package eventos {
+  enum TipoEvento {
+    ALTA
+    CAMBIO_ESTADO
+    ALERTA
+    CANCELACION_AUTOMATICA
+  }
+
+  interface OyenteEvento <<functional>> {
+    +notificar(evento : Evento)
+    +luego(siguiente : OyenteEvento) : OyenteEvento
+  }
+
+  class Evento <<record>> {
+    tipo : TipoEvento
+    mensaje : String
+    instante : LocalDateTime
+    {static} +de(tipo : TipoEvento, mensaje : String) : Evento
+  }
+}
+
+package persistencia {
+  interface "Repositorio<T,K>" as Repositorio {
+    +guardar(e : T)
+    +buscar(clave : K) : Optional<T>
+    +todos() : List<T>
+    +eliminar(clave : K) : boolean
+  }
+
+  class RepositorioMaterialSQLite{
+    {static}atributoDe(e : Material) : String
+    +guardar(e : material)
+    +buscar(clave : Signatura) : Optional<Material>
+    +todos() : List<Material>
+    +eliminar(clave : Signatura) : boolean
+  }
+  class RepositorioSocioSQLite{
+    +guardar(a : Socio)
+    +buscar(id : Integer) : Optional<Socio>
+    +todos() : List<Socio>
+    +eliminar(id : Integer) : boolean
+  }
+  class RepositorioPrestamoSQLite{
+    +guardar(t : Prestamo)
+    +buscar(id : Integer) : Optional<Prestamo>
+    -reconstruir(c : Connection, rs : ResulrSet) : Prestamo
+    +todos() : List<Prestamo>
+    +eliminar(id : Integer) : boolean
+  }
+
+  class ConexionSQLite {
+    -conexion : Connection
+    +ConexionSQLite(rutaArchivo : String)
+    +conexion() : Connection
+    +enTransaccion(trabajo : TrabajoSQL<R>) : R
+    +close()
+  }
+
+  interface "ConexionSQLite.TrabajoSQL<R>" as TrabajoSQL <<functional>> {
+    +ejecutar(c : Connection) : R
+  }
+
+  class Respaldo{
+    +{static}exportar(archivo : Path, catalogo : Acervo, socios : Collection<socio>, registros : Collection<Prestamo>)
+    +{static}importar(archivo : Path) : Contenido
+  
+  }
+}
+
+package servicio {
+  class Biblioteca {
+    {static} +PLAZO_DIAS : int
+
+    +Biblioteca(bd : ConexionSQLite)
+    +suscribir(oyente : OyenteEvento)
+    +desuscribir(oyente : OyenteEvento)
+
+    +registrar(f : FabricaElemento, nombre : String, precio : double, atributo) : E
+    +actualizar(elemento : Material, nombre : String, precio : double)
+    +retirar(clave : Signatura) : boolean
+    +elemento(clave : String) : Material
+    +proyectar(funcion : Function) : List
+
+    +registrarSocio(nombre : String, correo : String, nivel : Nivel) : Socio
+    +actualizarSocio(id : int, nombre : String, correo : String, nivel : Nivel)
+    +retirarSocio(id : int) : boolean
+    +socio(id : int) : Socio
+    +socios() : List<Socio>
+
+    +abrir(idSocio : int) : Prestamo
+    +agregarLinea(idPrestamo : int, clave : String, unidades : int) : Linea
+    +quitarLinea(idPrestamo : int, clave : String) : boolean
+    +iniciar(idPrestamo : int)
+    +cerrar(idPrestamo : int)
+    +cancelar(idPrestamo : int)
+    +registro(id : int) : Prestamo
+    +registros() : List<Prestamo>
+
+    +ingresosPorTipo() : Map<String,Double>
+    +masDemandado() : Optional<Material>
+    +mejores(n : int) : List<Socio>
+    +estadisticas() : DoubleSummaryStatistics
+    +particionarPorPrecio(umbral : double) : Map<Boolean,List<Material>>
+    +conteoPorEstado() : Map<Estado,Long>
+
+    +revisar() : int
+    +iniciarMonitor(ms : long)
+    +detenerMonitor()
+    +monitorActivo() : boolean
+    +close()
+  }
+
+  class "Biblioteca.MonitorVencimientos" as Monitor <<inner>>{
+    -MonitorVencimientos(peridodoMS : long)
+    #ejecutarCiclo()
+  }
+}
+
+package ui {
+  class PrincipalController <<JavaFX Controller>> {
+    -biblioteca : Biblioteca
+    -eventosUI : ObservableList<Evento>
+    -oyenteUI : OyenteEvento
+    +setBiblioteca(biblioteca : Biblioteca)
+    -mostrarCatalogo()
+    -mostrarSocios()
+    -mostrarPrestamos()
+    -mostrarReportes()
+    -mostrarEventos()
+  }
+
+  class CatalogoController <<JavaFX Controller>> {
+    -biblioteca : Biblioteca
+    +setBiblioteca(biblioteca : Biblioteca)
+    -actualizarTabla()
+    -nuevoMaterial()
+    -editarMaterial()
+    -eliminarMaterial()
+  }
+
+  class MaterialFormController <<JavaFX Controller>> {
+    -biblioteca : Biblioteca
+    -materialEditando : Material
+    +setBiblioteca(biblioteca : Biblioteca)
+    +setMaterial(material : Material)
+    -guardar()
+  }
+
+  class SociosController <<JavaFX Controller>> {
+    -biblioteca : Biblioteca
+    +setBiblioteca(biblioteca : Biblioteca)
+    -actualizarTabla()
+    -nuevoSocio()
+    -editarSocio()
+    -eliminarSocio()
+  }
+
+  class SocioFormController <<JavaFX Controller>> {
+    -biblioteca : Biblioteca
+    -socioEditando : Socio
+    +setBiblioteca(biblioteca : Biblioteca)
+    +setSocio(socio : Socio)
+    -guardar()
+  }
+
+  class PrestamosController <<JavaFX Controller>> {
+    -biblioteca : Biblioteca
+    +setBiblioteca(biblioteca : Biblioteca)
+    -actualizarPrestamos()
+    -nuevoPrestamo()
+    -agregarLinea()
+    -quitarLinea()
+    -iniciarPrestamo()
+    -cerrarPrestamo()
+    -cancelarPrestamo()
+  }
+
+  class ReportesController <<JavaFX Controller>> {
+    -biblioteca : Biblioteca
+    +setBiblioteca(biblioteca : Biblioteca)
+    -actualizarReportes()
+  }
+
+  class EventosController <<JavaFX Controller>> {
+    -biblioteca : Biblioteca
+    -eventos : ObservableList<Evento>
+    +setDatos(biblioteca : Biblioteca, eventos : ObservableList<Evento>)
+    -revisarAhora()
+    -limpiar()
+  }
+}
+
+package app {
+  class BibliotecaApp <<JavaFX Application>> {
+    -bd : ConexionSQLite
+    -biblioteca : Biblioteca
+    +start(stage : Stage)
+    +stop()
+    {static} +main(args : String[])
+  }
+}
+
+' Relaciones originales del modelo
+Material ..|> Prestable
+Libro --|> Material
+Material +-- Libro
+Libro ..|> Digitalizable
+Revista --|> Material
+Material +-- Revista
+Revista ..|> Restringido
+Tesis --|> Material
+Material +-- Tesis
+Tesis ..|> Digitalizable
+Tesis ..|> Restringido
+
+Prestamo *-- "1..*" Linea
+Prestamo +-- Linea
+Linea --> "1" Material
+Prestamo --> "1" Socio
+Prestamo --> Estado
+Socio --> Nivel
+
+Acervo o-- "0..*" Material
+Acervo +-- Iterador
+Acervo ..> Regla
+Fabrica ..> Material
+
+' Concurrencia y eventos
+Biblioteca +-- Monitor
+Monitor --|> TareaPeriodica
+Biblioteca o-- "0..*" OyenteEvento
+OyenteEvento ..> Evento
+Evento --> TipoEvento
+
+' Persistencia
+Biblioteca --> Acervo
+Biblioteca --> Repositorio
+Biblioteca --> ConexionSQLite
+RepositorioMaterialSQLite ..|> Repositorio
+RepositorioSocioSQLite ..|> Repositorio
+RepositorioPrestamoSQLite ..|> Repositorio
+RepositorioMaterialSQLite --> ConexionSQLite
+RepositorioSocioSQLite --> ConexionSQLite
+RepositorioPrestamoSQLite --> ConexionSQLite
+RepositorioPrestamoSQLite ..> RepositorioMaterialSQLite
+RepositorioPrestamoSQLite ..> RepositorioSocioSQLite
+ConexionSQLite +-- TrabajoSQL
+
+' Aplicación y UI
+BibliotecaApp --> ConexionSQLite : crea
+BibliotecaApp --> Biblioteca : crea
+BibliotecaApp --> PrincipalController : inyecta
+
+PrincipalController --> Biblioteca
+PrincipalController ..> Evento
+PrincipalController ..> OyenteEvento
+
+PrincipalController ..> CatalogoController
+PrincipalController ..> SociosController
+PrincipalController ..> PrestamosController
+PrincipalController ..> ReportesController
+PrincipalController ..> EventosController
+
+CatalogoController --> Biblioteca
+CatalogoController ..> Material
+CatalogoController ..> MaterialFormController
+MaterialFormController --> Biblioteca
+MaterialFormController ..> Material
+
+SociosController --> Biblioteca
+SociosController ..> Socio
+SociosController ..> SocioFormController
+SocioFormController --> Biblioteca
+SocioFormController ..> Socio
+SocioFormController ..> Nivel
+
+PrestamosController --> Biblioteca
+PrestamosController ..> Prestamo
+PrestamosController ..> Material
+PrestamosController ..> Socio
+PrestamosController ..> Estado
+
+ReportesController --> Biblioteca
+ReportesController ..> Material
+ReportesController ..> Socio
+
+EventosController --> Biblioteca
+EventosController ..> Evento
+
+note right of PrincipalController
+  Suscripción única a OyenteEvento.
+  Los eventos del monitor se envían
+  al hilo JavaFX con Platform.runLater().
+end note
+
+note bottom of BibliotecaApp
+  Punto de composición:
+  crea ConexionSQLite y Biblioteca.
+  La capa ui no accede directamente
+  a persistencia.
+end note
+
+@enduml

@@ -27,6 +27,8 @@ public class PrincipalController {
     public void setBiblioteca(Biblioteca biblioteca){
         this.biblioteca = biblioteca;
 
+        biblioteca.suscribir(oyenteUI);
+
         if (!biblioteca.monitorActivo()) {
             biblioteca.iniciarMonitor(1000);
         }
